@@ -1,4 +1,4 @@
-import Base.Test
+using Base.Test
 
 type Fumehood
 	kind::Int	# there are different types, need to clarify them here
@@ -15,7 +15,7 @@ type Fumehood
 	bac::Int
 	tag::String
 	building::String
-	room::Int
+	room::String
 	hoodnumber::Int
 	department::String
 	uselevel::Int # 0 := light, 1 := medium, 2 := heavy
