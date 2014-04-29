@@ -49,3 +49,4 @@ end
 function fumehoodcfm(hood::Fumehood)
   min(hood.maxcfm, max(hood.mincfm, faceintakecfm(hood)))
 end
+
