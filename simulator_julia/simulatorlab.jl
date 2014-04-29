@@ -15,10 +15,7 @@ type Fumehood
   occupied::Bool
   bac::Int
   tag::String
-  building::String
-  room::String
-  hoodnumber::Int
-  department::String
+  metadata
   uselevel::Int # 0 := light, 1 := medium, 2 := heavy
 end
 
@@ -53,5 +50,5 @@ end
 
 function metadatatofumehoodset(file::String)
   md = readtable(file)
-  
+
 end

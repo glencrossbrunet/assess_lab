@@ -1,8 +1,13 @@
-datastream -> openscraped
-datastream -> flowscraped
+digraph OverviewPipeline{
+    datastream -> openscraped [label=loadflowdatastream]
+    datastream -> flowscraped [label=loadflowdatastream]
+    flowscraped -> addflowdatatofumehoods
 
-deltaweb -> opendeltaweb
-deltaweb -> flowdeltaweb
+    deltaweb -> opendeltaweb
+    deltaweb -> flowdeltaweb
 
-metadata -> openscraped
-datastream -> flowscraped
+    metadata -> "fumehoods::Array{Fumehood}" [label=metadatatofumehoodset]
+    "fumehoods::Array{Fumehood}" -> addflowdatatofumehoods
+
+    addflowdatatofumehoods -> fumehoods_with_flow_data
+}
