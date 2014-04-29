@@ -49,6 +49,8 @@ function fumehoodcfm(hood::Fumehood)
 end
 
 function metadatatofumehoodset(file::String)
-  md = readtable(file)
-
+  handler = open(file)
+  for line=eachline(handler)
+    
+  end
 end

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 class Fumehood:
+    bac
     kind
     height
     width
