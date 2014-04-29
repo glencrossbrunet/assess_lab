@@ -1,0 +1,5 @@
+datastream -> openscraped
+datastream -> flowscraped
+
+deltaweb -> opendeltaweb
+deltaweb -> flowdeltaweb
