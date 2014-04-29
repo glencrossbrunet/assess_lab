@@ -3,3 +3,6 @@ datastream -> flowscraped
 
 deltaweb -> opendeltaweb
 deltaweb -> flowdeltaweb
+
+metadata -> openscraped
+datastream -> flowscraped

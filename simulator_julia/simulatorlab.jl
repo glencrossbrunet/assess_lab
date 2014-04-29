@@ -1,4 +1,5 @@
 using Base.Test
+using DataFrame
 
 type Fumehood
   kind::Int # there are different types, need to clarify them here
@@ -50,3 +51,7 @@ function fumehoodcfm(hood::Fumehood)
   min(hood.maxcfm, max(hood.mincfm, faceintakecfm(hood)))
 end
 
+function metadatatofumehoodset(file::String)
+  md = readtable(file)
+  
+end

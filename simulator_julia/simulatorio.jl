@@ -1,10 +1,6 @@
-function loadflowdatastream(file)
-    flowstream = open(file)
-    for line = eachline(stream)
-        datapoint = processflowdatapoint(line)
-    end
-end
+using DataFrames
 
-function processflowdatapoint(line)
-    line = split(strip(line), ",")
+function loadflowdatastream(file)
+    flowdataframe = readtable(file)
+    bacgroups = groupby(flowdataframe, :BAC)
 end
