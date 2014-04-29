@@ -12,6 +12,13 @@ type Fumehood
 	maxcfm::Float32
 	mincfm::Float32
 	occupied::Bool
+	bac::Int
+	tag::String
+	building::String
+	room::Int
+	hoodnumber::Int
+	department::String
+	uselevel::Int # 0 := light, 1 := medium, 2 := heavy
 end
 
 type Lab
@@ -19,6 +26,11 @@ type Lab
 	hood_count::Int
 	height::Float32
 	minach::Float32
+end
+
+type Ventilation
+	costpercfminput::Float32
+	costpercfmoutput::Float32
 end
 
 
@@ -37,4 +49,3 @@ end
 function fumehoodcfm(hood::Fumehood)
   min([hood.maxcfm, max([hood.mincfm, faceintakecfm(hood)])])
 end
-
