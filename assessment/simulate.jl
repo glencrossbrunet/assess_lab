@@ -1,36 +1,36 @@
 using Base.Test
 
 type Fumehood
-	kind::Int	# there are different types, need to clarify them here
-	height::Float32
-	width::Float32
-	minflowrate::Float32
-	maxflowrate::Float32
-	facevelocityoccupied::Float32
-	facevelocityunoccupied::Float32
-	maxsash::Float32
-	maxcfm::Float32
-	mincfm::Float32
-	occupied::Bool
-	bac::Int
-	tag::String
-	building::String
-	room::String
-	hoodnumber::Int
-	department::String
-	uselevel::Int # 0 := light, 1 := medium, 2 := heavy
+  kind::Int # there are different types, need to clarify them here
+  height::Float32
+  width::Float32
+  minflowrate::Float32
+  maxflowrate::Float32
+  facevelocityoccupied::Float32
+  facevelocityunoccupied::Float32
+  maxsash::Float32
+  maxcfm::Float32
+  mincfm::Float32
+  occupied::Bool
+  bac::Int
+  tag::String
+  building::String
+  room::String
+  hoodnumber::Int
+  department::String
+  uselevel::Int # 0 := light, 1 := medium, 2 := heavy
 end
 
 type Lab
-	area::Float32
-	hood_count::Int
-	height::Float32
-	minach::Float32
+  area::Float32
+  hood_count::Int
+  height::Float32
+  minach::Float32
 end
 
 type Ventilation
-	costpercfminput::Float32
-	costpercfmoutput::Float32
+  costpercfminput::Float32
+  costpercfmoutput::Float32
 end
 
 
