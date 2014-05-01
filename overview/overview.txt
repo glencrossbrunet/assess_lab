@@ -1,13 +1,8 @@
 digraph OverviewPipeline{
-    datastream -> openscraped [label=loadflowdatastream]
-    datastream -> flowscraped [label=loadflowdatastream]
-    flowscraped -> addflowdatatofumehoods
-
-    deltaweb -> opendeltaweb
-    deltaweb -> flowdeltaweb
-
-    metadata -> "fumehoods::Array{Fumehood}" [label=metadatatofumehoodset]
-    "fumehoods::Array{Fumehood}" -> addflowdatatofumehoods
-
-    addflowdatatofumehoods -> fumehoods_with_flow_data
+    datastream_txt -> timeseries_data -> fumehoods_with_timeseries
+    hoodmodels_csv -> hoodmodel -> fumehoods
+    laboratories_csv -> laboratory -> fumehoods
+    fumehoods -> fumehoods_with_timeseries
+    fumehoods_with_timeseries -> series_of_states -> point_in_state -> simulate_per_hour -> point_in_state
+    simulate_per_hour -> statistical_analysis
 }

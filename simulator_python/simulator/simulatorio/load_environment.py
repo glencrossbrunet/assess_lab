@@ -36,7 +36,7 @@ def load_hoods_datastream(file, fumehoods):
   flow_dict_scraped = {}
   f = open(file)
 
-  df = pd.read_csv('DataStream.txt',
+  df = pd.read_csv(file,
                             skiprows = 1,
                             index_col=0,
                             parse_dates=True,
@@ -61,16 +61,20 @@ def load_hoods_datastream(file, fumehoods):
                                  closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
                                                                       closed='left',label='left')
  
+  '''
+  Insert code to make the following transformation:
+  { fumehood : pandas dataframe of time series }
+  '''
   if(verbose):
     print("Linking data to fumehoods by BAC")
-  fumehood_to_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
+  fumehood_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
   
-  return (open_scraped, flow_scraped)
+  return fumehood_flowdata
 
 def load_environment(path):
   os.chdir(path)
   laboratories = load_laboratories('laboratories.csv')
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
-  (open_scraped, flow_scraped) = load_hoods_datastream('datastream.txt', fumehoods)
-  return (laboratories, hoodmodels, fumehoods, open_scraped, flow_scraped)
+  fumehood_flowdata = load_hoods_datastream('testing-datastream.txt', fumehoods)
+  return (laboratories, hoodmodels, fumehoods, fumehood_flowdata)

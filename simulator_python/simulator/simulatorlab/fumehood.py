@@ -45,7 +45,7 @@ class Fumehood:
   def faceintakecfm(self):
     return self.facevelocity * self.sash_height * self.hood_model.sash_width / 144
 
-  def fumehoodcfm(self):
+  def finalcfm(self):
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm])])
 
