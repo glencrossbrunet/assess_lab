@@ -6,6 +6,8 @@
 *.sln
 *.pyproj
 
+dataset/DataStream.txt
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
