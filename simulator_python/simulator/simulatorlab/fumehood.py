@@ -16,15 +16,14 @@ class HoodModel:
 
 class Fumehood:
 
-  def __init__(self, initial_data, laboratory, hoodmodel):
+  def __init__(self, initial_data, laboratory, hoodmodels):
     self.hood_id = initial_data['hood_id']
     self.bac = initial_data['bac']
     self.mcgill_tag = initial_data['mcgill_tag']
-    self.additional_evac = initial_data['additional_evac']
     self.hood_num = initial_data['hood_num']
     self.workshop = initial_data['workshop']
     self.laboratory = initial_data['laboratory']
-    self.hood_model = initial_data['hood_model']
+    self.hood_model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
     self.install_time = initial_data['install_time']
     self.follow_up_date = initial_data['follow_up_date']
     self.mac_address = initial_data['mac_address']
@@ -53,4 +52,10 @@ def get_fumehood_for_bac(bac, fumehoods):
   for fumehood in fumehoods:
     if fumehood.bac == bac:
       return fumehood
+  return None
+
+def get_hoodmodel_for_id(id, hoodmodels):
+  for hoodmodel in hoodmodels:
+    if hoodmodel.model == id:
+      return hoodmodel
   return None

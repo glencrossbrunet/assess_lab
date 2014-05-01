@@ -40,41 +40,51 @@ def load_hoods_datastream(file, fumehoods):
                             skiprows = 1,
                             index_col=0,
                             parse_dates=True,
-                            date_parser = lambda x: np.datetime64(x*1000000),
+                            date_parser = lambda x : pd.to_datetime(x * 1e9),
                             squeeze = True)
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
   df.columns = ['BAC','flow','open']
 
-  print df
-  
-  if(verbose):
-    print("Resampling Data Points")
+#  '''
+#  Insert code to make the following transformation:
+#  { fumehood : pandas dataframe of time series }
+#  '''
+#  if(verbose):
+#    print("Linking data to fumehoods by BAC")
+#  fumehood_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
+#  
+#  groups = df.groupby('BAC').resample('5min',how='mean',fill_method='ffill',
+#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
+#                                                                      closed='left',label='left')
+#
+#  print groups
+#
+#  for fumehood, flowdata in fumehood_flowdata.iteritems():
+#    flowdata = flowdata.resample('5min',how='mean',fill_method='ffill',
+#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
+#                                                                      closed='left',label='left')
+#
+#  print fumehood_flowdata
+#
+#  df = df.resample('5min',how='mean',fill_method='ffill',
+#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
+#                                                                      closed='left',label='left') 
 
   grouped = df.groupby('BAC')
-  
-  if(verbose):
-    print("Resampling datastream for fumehood open and flow.")
-  flow_data = flow_data.resample('5min',how='mean',fill_method='ffill',
-                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
-                                                                      closed='left',label='left') 
-  open_data = open_data.resample('5min',how='mean',fill_method='ffill',
-                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
-                                                                      closed='left',label='left')
- 
-  '''
-  Insert code to make the following transformation:
-  { fumehood : pandas dataframe of time series }
-  '''
-  if(verbose):
-    print("Linking data to fumehoods by BAC")
-  fumehood_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
-  
-  return fumehood_flowdata
+
+  for name, group in grouped:
+    group = group.resample('5min',how='mean',fill_method='ffill',
+                            closed='left',label='left')
+    group = group.resample('1H',how='mean',fill_method='ffill',
+                           closed='left',label='left')
+    print(group)
+
+  return (grouped)
 
 def load_environment(path):
   os.chdir(path)
   laboratories = load_laboratories('laboratories.csv')
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
-  fumehood_flowdata = load_hoods_datastream('testing-datastream.txt', fumehoods)
-  return (laboratories, hoodmodels, fumehoods, fumehood_flowdata)
+  grouped = load_hoods_datastream('testing-datastream.txt', fumehoods)
+  return (laboratories, hoodmodels, fumehoods, grouped)
