@@ -3,6 +3,5 @@ digraph OverviewPipeline{
     hoodmodels_csv -> hoodmodel -> fumehoods
     laboratories_csv -> laboratory -> fumehoods
     fumehoods -> fumehoods_with_timeseries
-    fumehoods_with_timeseries -> series_of_states -> point_in_state -> simulate_per_hour -> point_in_state
-    simulate_per_hour -> statistical_analysis
+    fumehoods_with_timeseries -> series_of_states -> adjust_cfm_for_fumehood_state -> sum_per_lab -> adjust_cfm_for_laboratory_parameters -> plot_to_pdf
 }

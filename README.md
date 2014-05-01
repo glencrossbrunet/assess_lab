@@ -52,3 +52,9 @@ Fume Hood := ventilation device
     function fumehoodcfm
       min([hoodmaxcfm, max([hoodmincfm, faceintakecfm])])
     end
+
+# TODO
+
+## Analysis
+
+Check frequency of NA in the dataset.

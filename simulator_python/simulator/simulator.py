@@ -14,7 +14,6 @@ def adjust_cfm_for_fumehood_state(series, fumehood):
   return series
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
-  print cfm
   if cfm < laboratory.min_evac_cfm:
     return laboratory.min_evac_cfm
   if cfm > laboratory.max_evac_cfm:
@@ -27,7 +26,7 @@ def simulate(fumehood_flowdata, laboratories, fumehoods):
   for fumehood, flowdata in fumehood_flowdata.iteritems():
     flowdata = flowdata.apply(lambda x : adjust_cfm_for_fumehood_state(x, fumehood), axis=1)
 
-  # plot_fumehood_to_flowdata(fumehood_flowdata, output_directory)
+  plot_fumehood_to_flowdata(fumehood_flowdata, output_directory)
 
   results_series = []
 
@@ -44,13 +43,12 @@ def simulate(fumehood_flowdata, laboratories, fumehoods):
   for k, v in results_by_lab:
     original = v
     # plot_laboratory_flowdata(str(k) + '_hoods', original, output_directory)
-    v.sum(axis=1)
+    v = v.sum(axis=1)
     print "Lab : " + k.laboratory_name
     print "Lab Min : " + str(k.min_evac_cfm)
     print "Lab Max : " + str(k.max_evac_cfm)
     v = v.apply(lambda x : adjust_cfm_for_laboratory_parameters(x, k))
-    print "Hourly values \n" + str(v) + '\n'
-    # plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
+    plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
 
   sys.apply()
 

@@ -4,7 +4,6 @@ import numpy as np
 
 def plot_fumehood_to_flowdata(fumehood_flowdata, output_dir):
   for fumehood, flowdata in fumehood_flowdata.iteritems():
-    flowdata = flowdata.drop('BAC',1)
     fig = flowdata.plot()
     plt.savefig(output_dir + fumehood.hood_id + '-flowdata.pdf')
 
