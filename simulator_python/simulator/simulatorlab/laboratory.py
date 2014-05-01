@@ -8,4 +8,3 @@ class Laboratory:
     self.building_num = initial_data['building_num']
     self.room = initial_data['room']
     self.department = initial_data['department']
-  
