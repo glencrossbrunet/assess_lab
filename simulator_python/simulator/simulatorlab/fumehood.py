@@ -48,3 +48,9 @@ class Fumehood:
   def fumehoodcfm(self):
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm])])
+
+  def get_fumehood_for_bac(bac, fumehoods):
+    for fumehood in fumehoods:
+      if fumehood.bac == bac:
+        return fumehood
+    return None

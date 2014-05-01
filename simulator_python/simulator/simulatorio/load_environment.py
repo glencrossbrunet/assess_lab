@@ -28,24 +28,25 @@ def load_fumehoods(file, laboratories, hoodmodels):
   fumehoods = [Fumehood(data, laboratories, hoodmodels) for data in dictionary]
   return fumehoods
 
-def load_hoods_datastream(file):
+def load_hoods_datastream(file, fumehoods):
   if(verbose):
     print("Scraping datastream for fumehood open and flow data")
+
   open_dict_scraped = {}
   flow_dict_scraped = {}
-  data_stream = pd.read_csv(file,
-                            skiprows = 1,
-                            index_col=0,
-                            parse_dates=True,
-                            date_parser = lambda x: np.datetime64(x*1000000),
-                            squeeze = True)
-  if(verbose):
-    print("Localising time")
-  data_stream.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
-  data_stream.columns = ['BAC','flow','open']
+  f = open(file)
+
+  df = pd.read_csv(file)
+
+  print df
   
   if(verbose):
-    print("Linking BAC data to IDs")
+    print("Linking data to fumehoods by BAC")
+
+  fumehood_to_flowdata = {get_fumehood_for_bac(flowdata['BAC'], fumehoods): flowdata for flowdata in df.iterrows()}
+
+  print fumehood_to_flowdata
+
   bac_to_id = {}
   for i in range(len(hood_info)):
       bac_to_id[hood_info['bac'][i]] = hood_info.index[i]
@@ -78,5 +79,5 @@ def load_environment(path):
   laboratories = load_laboratories('laboratories.csv')
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
-  (open_scraped, flow_scraped) = load_hoods_datastream('datastream.txt')
+  (open_scraped, flow_scraped) = load_hoods_datastream('datastream.txt', fumehoods)
   return (laboratories, hoodmodels, fumehoods, open_scraped, flow_scraped)
