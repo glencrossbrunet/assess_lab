@@ -36,32 +36,21 @@ def load_hoods_datastream(file, fumehoods):
   flow_dict_scraped = {}
   f = open(file)
 
-  df = pd.read_csv(file)
+  df = pd.read_csv('DataStream.txt',
+                            skiprows = 1,
+                            index_col=0,
+                            parse_dates=True,
+                            date_parser = lambda x: np.datetime64(x*1000000),
+                            squeeze = True)
+  df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
+  df.columns = ['BAC','flow','open']
 
   print df
   
   if(verbose):
-    print("Linking data to fumehoods by BAC")
+    print("Resampling Data Points")
 
-  fumehood_to_flowdata = {get_fumehood_for_bac(flowdata['BAC'], fumehoods): flowdata for flowdata in df.iterrows()}
-
-  print fumehood_to_flowdata
-
-  bac_to_id = {}
-  for i in range(len(hood_info)):
-      bac_to_id[hood_info['bac'][i]] = hood_info.index[i]
-  
-  grouped = data_stream.groupby('BAC')
-  
-  for name, group in grouped:
-      hood_id = bac_to_id[name]
-      group['index'] = group.index
-      group.drop_duplicates(cols='index', take_last = True, inplace=True)
-      open_dict_scraped[hood_id] = group['open']
-      flow_dict_scraped[hood_id] = group['flow']
-  
-  open_scraped = pd.DataFrame(open_dict_scraped)
-  flow_scraped = pd.DataFrame(flow_dict_scraped)
+  grouped = df.groupby('BAC')
   
   if(verbose):
     print("Resampling datastream for fumehood open and flow.")
@@ -71,6 +60,10 @@ def load_hoods_datastream(file, fumehoods):
   open_data = open_data.resample('5min',how='mean',fill_method='ffill',
                                  closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
                                                                       closed='left',label='left')
+ 
+  if(verbose):
+    print("Linking data to fumehoods by BAC")
+  fumehood_to_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
   
   return (open_scraped, flow_scraped)
 
