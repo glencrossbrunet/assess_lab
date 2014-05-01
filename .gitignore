@@ -6,7 +6,7 @@
 *.sln
 *.pyproj
 
-dataset/DataStream.txt
+dataset/datastream-full.txt
 
 # Build results
 [Dd]ebug/
