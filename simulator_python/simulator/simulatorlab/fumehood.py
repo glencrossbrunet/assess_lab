@@ -47,4 +47,4 @@ class Fumehood:
 
   def fumehoodcfm(self):
     return np.min([self.hood_model.max_cfm, 
-                   np.max([self.hood_model.min_cfm, self.faceintakecfm])
+                   np.max([self.hood_model.min_cfm, self.faceintakecfm])])
