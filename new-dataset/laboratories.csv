@@ -1,3 +1,3 @@
-laboratory_name,building_name,additional_evac,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied,ach_occupied,additional_evac,total_hoods
-demo-lab,Otto Maass,,119,230,chemistry,jane doe,john smith,14,2265,4,10,1192,17
-demo-lab-b,Otto Maass,,119,230,chemistry,jane doe,john smith,12,2000,2,8,500,12
+laboratory_name,building_name,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied,ach_occupied,additional_evac,total_hoods
+demo-lab,Otto Maass,119,230,chemistry,jane doe,john smith,14,2265,4,10,1192,17
+demo-lab-b,Otto Maass,119,230,chemistry,jane doe,john smith,12,2000,2,8,500,12

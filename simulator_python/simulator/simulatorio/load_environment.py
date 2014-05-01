@@ -37,11 +37,11 @@ def load_hoods_datastream(file, fumehoods):
   f = open(file)
 
   df = pd.read_csv(file,
-                            skiprows = 1,
-                            index_col=0,
-                            parse_dates=True,
-                            date_parser = lambda x : pd.to_datetime(x * 1e9),
-                            squeeze = True)
+                   skiprows = 1,
+                   index_col=0,
+                   parse_dates=True,
+                   date_parser = lambda x : pd.to_datetime(x * 1e9),
+                   squeeze = True)
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
   df.columns = ['BAC','flow','open']
 
@@ -71,20 +71,24 @@ def load_hoods_datastream(file, fumehoods):
 #                                                                      closed='left',label='left') 
 
   grouped = df.groupby('BAC')
-
-  for name, group in grouped:
+  fumehood_flowdata = {}
+  for bac, group in grouped:
+    group = group.drop('BAC', 1)
     group = group.resample('5min',how='mean',fill_method='ffill',
                             closed='left',label='left')
-    group = group.resample('1H',how='mean',fill_method='ffill',
+    fumehood_flowdata[get_fumehood_for_bac(bac, fumehoods)] = group.resample('1H',how='mean',fill_method='ffill',
                            closed='left',label='left')
-    print(group)
 
-  return (grouped)
+  return fumehood_flowdata
 
 def load_environment(path):
+  if(verbose):
+    "Loading environment"
   os.chdir(path)
   laboratories = load_laboratories('laboratories.csv')
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
   grouped = load_hoods_datastream('testing-datastream.txt', fumehoods)
+  if(verbose):
+    print "Finished loading environment"
   return (laboratories, hoodmodels, fumehoods, grouped)

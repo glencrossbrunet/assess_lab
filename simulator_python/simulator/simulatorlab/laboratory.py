@@ -15,11 +15,24 @@ class Laboratory:
     self.ach_occupied = initial_data['ach_occupied']
     self.additional_evac = initial_data['additional_evac']
     self.total_hoods = initial_data['total_hoods']
-    self.min_evac_cfm = generate.min_evac_cfm(height, surface_area, ach_unoccupied, additional_evac)
-    self.max_evac_cfm = generate.generate_max_evac_cfm(height, surface_area, ach_occupied, additional_evac)
+    self.min_evac_cfm = generate_min_evac_cfm(self.height, self.surface_area, 
+                                              self.ach_unoccupied, self.additional_evac)
+    self.max_evac_cfm = generate_max_evac_cfm(self.height, self.surface_area, 
+                                              self.ach_occupied, self.additional_evac)
+
+  def __str__(self):
+    return self.laboratory_name
 
 def generate_min_evac_cfm(height, surface_area, ach_unoccupied, additional_evac):
-  return (height * surface_area + additional_evac) * ach_unccopied
+  result = (height * surface_area + additional_evac) * ach_unoccupied
+  return result / 10
 
 def generate_max_evac_cfm(height, surface_area, ach_occupied, additional_evac):
-  return (height * surface_area + additional_evac) * ach_ccopied
+  result = (height * surface_area + additional_evac) * ach_occupied
+  return result / 10
+
+def get_laboratory_for_id(id, laboratories):
+  for laboratory in laboratories:
+    if laboratory.laboratory_name == id:
+      return laboratory
+  return None
