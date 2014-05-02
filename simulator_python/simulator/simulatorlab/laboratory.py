@@ -15,21 +15,21 @@ class Laboratory:
     self.ach_occupied = initial_data['ach_occupied']
     self.additional_evac = initial_data['additional_evac']
     self.total_hoods = initial_data['total_hoods']
-    self.min_evac_cfm = generate_min_evac_cfm(self.height, self.surface_area, 
+    self.min_evac_cfm = generate_min_evac_cfm_unoccupied(self.height, self.surface_area, 
                                               self.ach_unoccupied, self.additional_evac)
-    self.max_evac_cfm = generate_max_evac_cfm(self.height, self.surface_area, 
+    self.max_evac_cfm = generate_min_evac_cfm_occupied(self.height, self.surface_area, 
                                               self.ach_occupied, self.additional_evac)
 
   def __str__(self):
     return self.laboratory_name
 
-def generate_min_evac_cfm(height, surface_area, ach_unoccupied, additional_evac):
-  result = (height * surface_area + additional_evac) * ach_unoccupied
-  return result / 10
+def generate_min_evac_cfm_unoccupied(height, surface_area, ach_unoccupied, additional_evac):
+  result = (height * surface_area * ach_unoccupied)/60 + additional_evac
+  return result
 
-def generate_max_evac_cfm(height, surface_area, ach_occupied, additional_evac):
-  result = (height * surface_area + additional_evac) * ach_occupied
-  return result / 10
+def generate_min_evac_cfm_occupied(height, surface_area, ach_occupied, additional_evac):
+  result = (height * surface_area * ach_occupied)/60 + additional_evac
+  return result
 
 def get_laboratory_for_id(id, laboratories):
   for laboratory in laboratories:
