@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from plotting.cfm_values import *
+from simulatorstats.cfm_values import *
 
 def adjust_cfm_for_fumehood_state(series, fumehood):
   new_cfm = fumehood.finalcfm(series.ix['open'], True)
@@ -34,7 +34,9 @@ def simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory):
 
 def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
   results_by_lab = fumehood_flowdata.groupby(lambda x : x.laboratory, 1)
-  plot_summary_per_lab(results_by_lab, 'test.pdf')
+  plot_summary_per_lab(results_by_lab, output_directory + 'datastream-before-labadjustment')
+  plot_summary_per_lab_mean(results_by_lab, output_directory + 'datastream-before-labadjustment')
+
 
   for k, v in results_by_lab:
     # plot_laboratory_flowdata(str(k) + '_hoods', v, output_directory)
