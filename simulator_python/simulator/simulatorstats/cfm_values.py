@@ -23,14 +23,17 @@ def plot_summary_per_lab(results_by_lab, fig_title):
                    box.width, box.height * 0.9])
   ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
             fancybox=True, shadow=True, ncol=2)
+  plt.tight_layout()
   plt.savefig(fig_title + "-std-mean.pdf")
 
   for k, v in results_by_lab:
     v.corr().to_csv(fig_title + str(k) + '-correlation.csv')
+    v.corr().describe().to_csv(fig_title + str(k) + '-correlation-description.csv')
 
   for k, v in results_by_lab:
     fig = plt.figure()
     v.plot(colormap='jet')
+    plt.tight_layout()
     plt.savefig(fig_title + str(k) + '-allfumehoods.pdf')
 
 
@@ -40,4 +43,5 @@ def plot_summary_per_lab_mean(results_by_lab, fig_title):
     data = pd.Series(data.ix[:])
     print data
     fig = bootstrap_plot(data, size=100, samples=100)
+    plt.tight_layout()
     plt.savefig(fig_title + "-" + str(k) + "-bootstrap.pdf")
