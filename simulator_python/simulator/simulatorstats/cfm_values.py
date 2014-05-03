@@ -28,7 +28,7 @@ def plot_summary_per_lab(results_by_lab, fig_title):
 
   for k, v in results_by_lab:
     v.corr().to_csv(fig_title + str(k) + '-correlation.csv')
-    v.corr().describe().to_csv(fig_title + str(k) + '-correlation-description.csv')
+    v.corr().mean().describe().to_csv(fig_title + str(k) + '-correlation-description.csv')
 
   for k, v in results_by_lab:
     fig = plt.figure()
