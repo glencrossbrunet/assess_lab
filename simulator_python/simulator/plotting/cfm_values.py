@@ -11,3 +11,16 @@ def plot_laboratory_flowdata(lab, laboratory_cfm, output_dir):
   print "Making a figure"
   fig = laboratory_cfm.plot()
   plt.savefig(output_dir + str(lab) + '-flowdata.pdf')
+
+def plot_summary_per_lab(results_by_lab, fig_title):
+  fig = plt.figure()
+  ax = plt.subplot(111)
+  for k, v in results_by_lab:
+    ax.plot(v.mean(axis=1), label=(str(k) + '-mean'))
+    ax.plot(v.std(axis=1), label=(str(k) + '-std'))
+  box = ax.get_position()
+  ax.set_position([box.x0, box.y0 + box.height * 0.1,
+                   box.width, box.height * 0.9])
+  ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+            fancybox=True, shadow=True, ncol=5)
+  plt.savefig(fig_title)

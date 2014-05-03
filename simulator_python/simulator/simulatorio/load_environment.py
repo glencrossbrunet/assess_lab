@@ -4,6 +4,11 @@ from simulatorlab.fumehood import *
 
 verbose = True
 
+def printer_auxiliary(x):
+  print x
+  print type(x)
+  return x
+
 def load_laboratories(file):
   if(verbose):
     print("Loading laboratories")
@@ -59,38 +64,13 @@ def load_hoods_datastream(file, fumehoods):
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
   df.columns = ['BAC','flow','open']
 
-#  '''
-#  Insert code to make the following transformation:
-#  { fumehood : pandas dataframe of time series }
-#  '''
-#  if(verbose):
-#    print("Linking data to fumehoods by BAC")
-#  fumehood_flowdata = {get_fumehood_for_bac(int(flowdata['BAC']), fumehoods): flowdata for index, flowdata in df.iterrows()}
-#  
-#  groups = df.groupby('BAC').resample('5min',how='mean',fill_method='ffill',
-#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
-#                                                                      closed='left',label='left')
-#
-#  print groups
-#
-#  for fumehood, flowdata in fumehood_flowdata.iteritems():
-#    flowdata = flowdata.resample('5min',how='mean',fill_method='ffill',
-#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
-#                                                                      closed='left',label='left')
-#
-#  print fumehood_flowdata
-#
-#  df = df.resample('5min',how='mean',fill_method='ffill',
-#                                 closed='left',label='left').resample('1H',how='mean',fill_method='ffill',
-#                                                                      closed='left',label='left') 
-
   grouped = df.groupby('BAC')
   fumehood_flowdata = {}
   for bac, group in grouped:
     group = group.drop('BAC', 1)
     fumehood_flowdata[get_fumehood_for_bac(bac, fumehoods)] = resample_data_to_hourly(group)
 
-  grouped.aggregate(resample_data_to_hourly)
+  # grouped.aggregate(lambda x : resample_data_to_hourly(x))
 
   return fumehood_flowdata
 
