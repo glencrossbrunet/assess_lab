@@ -28,6 +28,20 @@ def load_fumehoods(file, laboratories, hoodmodels):
   fumehoods = [Fumehood(data, laboratories, hoodmodels) for data in dictionary]
   return fumehoods
 
+def resample_data_to_hourly(df):
+  df = df.resample('5min',how='mean',fill_method='ffill',
+                            closed='left',label='left')
+  df = df.resample('1H',how='mean',fill_method='ffill',
+                           closed='left',label='left')
+  return df
+
+def resample_data_to_half_hourly(df):
+  df = df.resample('5min',how='mean',fill_method='ffill',
+                            closed='left',label='left')
+  df = df.resample('30min',how='mean',fill_method='ffill',
+                           closed='left',label='left')
+  return df
+
 def load_hoods_datastream(file, fumehoods):
   if(verbose):
     print("Scraping datastream for fumehood open and flow data")
@@ -74,10 +88,9 @@ def load_hoods_datastream(file, fumehoods):
   fumehood_flowdata = {}
   for bac, group in grouped:
     group = group.drop('BAC', 1)
-    group = group.resample('5min',how='mean',fill_method='ffill',
-                            closed='left',label='left')
-    fumehood_flowdata[get_fumehood_for_bac(bac, fumehoods)] = group.resample('1H',how='mean',fill_method='ffill',
-                           closed='left',label='left')
+    fumehood_flowdata[get_fumehood_for_bac(bac, fumehoods)] = resample_data_to_hourly(group)
+
+  grouped.aggregate(resample_data_to_hourly)
 
   return fumehood_flowdata
 
