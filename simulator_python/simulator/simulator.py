@@ -4,21 +4,10 @@ import os, sys
 from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
 from plotting.cfm_values import *
+from simulatorlogic import *
 
 data_directory = "E:/git/equipmind/assess_lab/new-dataset"
 output_directory = "E:/git/equipmind/assess_lab/output/"
-
-def adjust_cfm_for_fumehood_state(series, fumehood):
-  new_cfm = fumehood.finalcfm(series.ix['open'], True)
-  series.ix['flow'] = new_cfm
-  return series
-
-def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
-  if cfm < laboratory.min_evac_cfm:
-    return laboratory.min_evac_cfm
-  if cfm > laboratory.max_evac_cfm:
-    return laboratory.max_evac_cfm
-  return cfm
 
 def simulate(fumehood_flowdata, laboratories, fumehoods):
   lab_cfms = pd.DataFrame()
@@ -26,7 +15,7 @@ def simulate(fumehood_flowdata, laboratories, fumehoods):
   for fumehood, flowdata in fumehood_flowdata.iteritems():
     flowdata = flowdata.apply(lambda x : adjust_cfm_for_fumehood_state(x, fumehood), axis=1)
 
-  plot_fumehood_to_flowdata(fumehood_flowdata, output_directory)
+  # plot_fumehood_to_flowdata(fumehood_flowdata, output_directory)
 
   results_series = []
 
@@ -41,16 +30,15 @@ def simulate(fumehood_flowdata, laboratories, fumehoods):
 
   results_by_lab = results.groupby(lambda x : x.laboratory, 1)
   for k, v in results_by_lab:
-    original = v
-    # plot_laboratory_flowdata(str(k) + '_hoods', original, output_directory)
+    # plot_laboratory_flowdata(str(k) + '_hoods', v, output_directory)
+    v.to_csv(output_directory + str(k) + '-full.csv')
     v = v.sum(axis=1)
     print "Lab : " + k.laboratory_name
     print "Lab Min : " + str(k.min_evac_cfm)
     print "Lab Max : " + str(k.max_evac_cfm)
     v = v.apply(lambda x : adjust_cfm_for_laboratory_parameters(x, k))
-    plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
-
-  sys.apply()
+    # plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
+    v.to_csv(output_directory + str(k) + '-sum.csv')
 
 
 (laboratories, hoodmodels, fumehoods, fumehood_flowdata) = load_environment(data_directory)

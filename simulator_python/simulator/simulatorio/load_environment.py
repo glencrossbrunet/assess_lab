@@ -88,7 +88,7 @@ def load_environment(path):
   laboratories = load_laboratories('laboratories.csv')
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
-  grouped = load_hoods_datastream('datastream.txt', fumehoods)
+  grouped = load_hoods_datastream('testing-datastream.txt', fumehoods)
   if(verbose):
     print "Finished loading environment"
   return (laboratories, hoodmodels, fumehoods, grouped)
