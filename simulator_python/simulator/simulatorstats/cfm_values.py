@@ -42,6 +42,6 @@ def plot_summary_per_lab_mean(results_by_lab, fig_title):
     data = v.sum(axis=1)
     data = pd.Series(data.ix[:])
     print data
-    fig = bootstrap_plot(data, size=100, samples=100)
+    fig = bootstrap_plot(data, size=200, samples=1000)
     plt.tight_layout()
     plt.savefig(fig_title + "-" + str(k) + "-bootstrap.pdf")
