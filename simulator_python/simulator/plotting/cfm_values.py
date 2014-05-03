@@ -22,5 +22,5 @@ def plot_summary_per_lab(results_by_lab, fig_title):
   ax.set_position([box.x0, box.y0 + box.height * 0.1,
                    box.width, box.height * 0.9])
   ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-            fancybox=True, shadow=True, ncol=5)
+            fancybox=True, shadow=True, ncol=2)
   plt.savefig(fig_title)
