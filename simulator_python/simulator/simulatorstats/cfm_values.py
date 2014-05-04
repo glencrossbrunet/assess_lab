@@ -40,13 +40,16 @@ def plot_summary_per_lab(results_by_lab, fig_title):
 def plot_summary_per_lab_mean(results_by_lab, fig_title):
 
   for k, v in results_by_lab:
-    data = v.sum(axis=1)
-    data = pd.Series(data.ix[:])
-    print data
+    data = pd.Series(v.sum(axis=1).ix[:])
     fig = bootstrap_plot(data, size=200, samples=1000)
     plt.tight_layout()
-    plt.savefig(fig_title + "-" + str(k) + "-bootstrap.pdf")
+    plt.savefig(fig_title + "-" + str(k) + "-sum-bootstrap.pdf")
+    data = pd.Series(v.mean(axis=1).ix[:])
+    fig = bootstrap_plot(data, size=200, samples=1000)
+    plt.tight_layout()
+    plt.savefig(fig_title + "-" + str(k) + "-mean-bootstrap.pdf")
 
   fig = plt.figure()
-  results_by_lab.describe().plot(kind='bar')
-  plt.savefig(fig_title + "-" + str(k) + "-hist.pdf")
+  results_by_lab.aggregate(np.mean).describe().plot(kind='bar')
+  plt.tight_layout()
+  plt.savefig(fig_title + "-" + str(k) + "-bardescription.pdf")
