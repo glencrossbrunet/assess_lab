@@ -32,12 +32,13 @@ def plot_summary_per_lab(results_by_lab, fig_title):
 
   for k, v in results_by_lab:
     fig = plt.figure()
-    v.plot(colormap='jet')
+    v.plot(colormap='jet', legend=False)
     plt.tight_layout()
     plt.savefig(fig_title + str(k) + '-allfumehoods.pdf')
 
 
 def plot_summary_per_lab_mean(results_by_lab, fig_title):
+
   for k, v in results_by_lab:
     data = v.sum(axis=1)
     data = pd.Series(data.ix[:])
@@ -45,3 +46,7 @@ def plot_summary_per_lab_mean(results_by_lab, fig_title):
     fig = bootstrap_plot(data, size=200, samples=1000)
     plt.tight_layout()
     plt.savefig(fig_title + "-" + str(k) + "-bootstrap.pdf")
+
+  fig = plt.figure()
+  results_by_lab.describe().plot(kind='bar')
+  plt.savefig(fig_title + "-" + str(k) + "-hist.pdf")
