@@ -35,6 +35,8 @@ class Fumehood:
     self.installation_notes = initial_data['installation_notes']
 
   def __str__(self):
+    if self.hood_model.model is None or self.laboratory is None:
+      return self.hood_id + "__incomplete-metadata"
     return self.hood_id + '__' + self.hood_model.model + '__' + self.laboratory.laboratory_name
 
   def facevelocity(self, occupied):

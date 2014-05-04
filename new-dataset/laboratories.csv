@@ -1,2 +1,2 @@
 laboratory_name,building_name,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied,ach_occupied,additional_evac,total_hoods
-otto-mass-119-230,Otto Maass,119,230,chemistry,jane doe,john smith,10,2265,4,10,1192,17
+otto-mass-119-230;,Otto Maass,119,230,chemistry,jane doe,john smith,10,2265,4,10,1192,17

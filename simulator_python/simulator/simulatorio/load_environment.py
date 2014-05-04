@@ -68,19 +68,27 @@ def load_hoods_datastream(file, fumehoods):
   fumehood_flowdata = {}
   for bac, group in grouped:
     group = group.drop('BAC', 1)
-    fumehood_flowdata[get_fumehood_for_bac(bac, fumehoods)] = resample_data_to_hourly(group)
+    hood = get_fumehood_for_bac(bac, fumehoods)
+    if hood.laboratory is None:
+      continue
+    if(verbose):
+      print "Processing data for Fumehood: " + str(hood)
+    fumehood_flowdata[hood] = resample_data_to_hourly(group)
 
   # grouped.aggregate(lambda x : resample_data_to_hourly(x))
 
   return fumehood_flowdata
 
-def load_environment(path):
+def load_environment(path, debug_directory):
   if(verbose):
     "Loading environment"
   os.chdir(path)
   laboratories = load_laboratories('laboratories.csv')
+  print map(str, laboratories)
   hoodmodels = load_hoodmodels('hoodmodels.csv')
+  print map(str, hoodmodels)
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
+  print map(str, fumehoods)
   grouped = load_hoods_datastream('datastream.txt', fumehoods)
   if(verbose):
     print "Finished loading environment"
