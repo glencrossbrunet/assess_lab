@@ -51,18 +51,14 @@ def load_hoods_datastream(file, fumehoods):
   if(verbose):
     print("Scraping datastream for fumehood open and flow data")
 
-  open_dict_scraped = {}
-  flow_dict_scraped = {}
-  f = open(file)
-
   df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["bac", "flow", "open"])
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
+  per_bac = df.groupby('bac')
 
-  grouped = df.groupby('BAC')
+  df['bac'].apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+
   fumehood_flowdata = {}
-  for bac, group in grouped:
-    group = group.drop('BAC', 1)
-    hood = get_fumehood_for_bac(bac, fumehoods)
+  for hood, group in grouped:
     if hood.laboratory is None:
       continue
     if(verbose):
@@ -73,7 +69,7 @@ def load_hoods_datastream(file, fumehoods):
 
   return fumehood_flowdata
 
-def load_environment(path, debug_directory):
+def load_environment(path, debug_directory, statistics_directory):
   if(verbose):
     "Loading environment"
   os.chdir(path)
