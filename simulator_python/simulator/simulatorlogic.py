@@ -37,6 +37,7 @@ def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
   plot_summary_per_lab(results_by_lab, output_directory + 'datastream-before-labadjustment')
   plot_summary_per_lab_mean(results_by_lab, output_directory + 'datastream-before-labadjustment')
 
+  results = {}
 
   for k, v in results_by_lab:
     # plot_laboratory_flowdata(str(k) + '_hoods', v, output_directory)
@@ -48,6 +49,11 @@ def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
     v = v.apply(lambda x : adjust_cfm_for_laboratory_parameters(x, k))
     # plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
     v.to_csv(output_directory + str(k) + '-sum.csv')
+    results[k] =  v
+
+  plot_diff_per_lab(results_by_lab, results, output_directory + 'datastream-after-labadjustment')
+
+
 
 def simulate(fumehood_flowdata, laboratories, fumehoods, output_directory):
   simulated_df = simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory)

@@ -58,11 +58,11 @@ def plot_diff_per_lab(a, b, fig_title):
   fig = plt.figure()
   ax = plt.subplot(111)
   for k, v in a:
-    for k`,v` in b:
-      ax.plot(v.mean(axis=1), label=(str(k) + '-mean'))
-      ax.plot(v.std(axis=1), label=(str(k) + '-std'))
-      ax.plot(v.mean(axis=1), label=(str(k) + '`-mean'))
-      ax.plot(v.std(axis=1), label=(str(k) + '`-std'))
+    ax.plot(v.mean(axis=1), label=(str(k) + 'a-mean'))
+    ax.plot(v.std(axis=1), label=(str(k) + 'a-std'))
+  for k, v in b.iteritems():
+    ax.plot(v.mean(axis=1), label=(str(k) + 'b-mean'))
+    ax.plot(v.std(axis=1), label=(str(k) + 'b-std'))
   box = ax.get_position()
   ax.set_position([box.x0, box.y0 + box.height * 0.1,
                    box.width, box.height * 0.9])
