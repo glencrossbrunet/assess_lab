@@ -58,4 +58,3 @@ def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
 def simulate(fumehood_flowdata, laboratories, fumehoods, output_directory):
   simulated_df = simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory)
   simulate_per_lab(simulated_df, laboratories, output_directory)
-

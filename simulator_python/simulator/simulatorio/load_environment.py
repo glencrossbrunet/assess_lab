@@ -13,24 +13,21 @@ def load_laboratories(file):
   if(verbose):
     print("Loading laboratories")
   df = pd.read_csv(file)
-  dictionary = [df.ix[i].to_dict() for i in df.index]
-  laboratories = [Laboratory(data) for data in dictionary]
+  laboratories = [Laboratory(data) for data in [df.ix[i].to_dict() for i in df.index]]
   return laboratories
 
 def load_hoodmodels(file):
   if(verbose):
     print("Loading hood models")
   df = pd.read_csv(file)
-  dictionary = [df.ix[i].to_dict() for i in df.index]
-  hoodmodels = [HoodModel(data) for data in dictionary]
+  hoodmodels = [HoodModel(data) for data in [df.ix[i].to_dict() for i in df.index]]
   return hoodmodels
 
 def load_fumehoods(file, laboratories, hoodmodels):
   if(verbose):
     print("Loading fumehoods")
   df = pd.read_csv(file)
-  dictionary = [df.ix[i].to_dict() for i in df.index]
-  fumehoods = [Fumehood(data, laboratories, hoodmodels) for data in dictionary]
+  fumehoods = [Fumehood(data, laboratories, hoodmodels) for data in [df.ix[i].to_dict() for i in df.index]]
   return fumehoods
 
 def resample_data_to_hourly(df):
