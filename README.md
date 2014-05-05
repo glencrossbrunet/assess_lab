@@ -1,5 +1,11 @@
 # Fume Hood Lab Assessment Software
 
+### A Note on Data Management in This Repository
+
+Because I have added the output CSVs and PDFs to the Github, a lot of data gets modified every time I run the code and thus pushed to the Github.
+Regularly this would be terrible, but it inevitably proves useful to keep a current copy of the results with the code that generates them so I'm leaving it like this!
+Change it to be more proper from a programmer's perspective if you prefer, and I will keep local copies of the results.
+
 ## Agents
 
 Lab := agent container
