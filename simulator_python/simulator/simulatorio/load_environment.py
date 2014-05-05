@@ -51,11 +51,20 @@ def load_hoods_datastream(file, fumehoods):
   if(verbose):
     print("Scraping datastream for fumehood open and flow data")
 
-  df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["bac", "flow", "open"])
+  df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["fumehood", "flow", "open"])
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
-  per_bac = df.groupby('bac')
 
-  df['bac'].apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+  fumehood_converted = df.fumehood.apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+  df["fumehood"] = fumehood_converted
+  print df
+  return df
+
+def preprocess_datastream(df, statistics_directory, fumehoods_with_labs):
+  if(verbose):
+    print "Printing basic statistics"
+  df = df[df.fumehood.isin(fumehoods_with_labs)]
+  df.groupby('fumehood').describe().to_csv(statistics_directory + 'fumehoods-describe.csv')
+  print df
 
   fumehood_flowdata = {}
   for hood, group in grouped:
@@ -69,17 +78,31 @@ def load_hoods_datastream(file, fumehoods):
 
   return fumehood_flowdata
 
+def convert_percent_open_to_flow(df, statistics_directory):
+  pass
+
+
 def load_environment(path, debug_directory, statistics_directory):
   if(verbose):
     "Loading environment"
   os.chdir(path)
+
   laboratories = load_laboratories('laboratories.csv')
   print map(str, laboratories)
+
   hoodmodels = load_hoodmodels('hoodmodels.csv')
   print map(str, hoodmodels)
+
   fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
-  print map(str, fumehoods)
-  grouped = load_hoods_datastream('datastream.txt', fumehoods)
+  
+  fumehoods_with_labs = []
+  for fumehood in fumehoods:
+    if fumehood.laboratory is not None:
+      fumehoods_with_labs.append(fumehood)
+  print map(str, fumehoods_with_labs)
+
+  df = load_hoods_datastream('datastream.txt', fumehoods)
+  grouped = preprocess_datastream(df, statistics_directory, fumehoods_with_labs)
   if(verbose):
     print "Finished loading environment"
   return (laboratories, hoodmodels, fumehoods, grouped)
