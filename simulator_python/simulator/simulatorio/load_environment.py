@@ -55,14 +55,8 @@ def load_hoods_datastream(file, fumehoods):
   flow_dict_scraped = {}
   f = open(file)
 
-  df = pd.read_csv(file,
-                   skiprows = 1,
-                   index_col=0,
-                   parse_dates=True,
-                   date_parser = lambda x : pd.to_datetime(x * 1e9),
-                   squeeze = True)
+  df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["bac", "flow", "open"])
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
-  df.columns = ['BAC','flow','open']
 
   grouped = df.groupby('BAC')
   fumehood_flowdata = {}
