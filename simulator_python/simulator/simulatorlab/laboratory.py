@@ -28,7 +28,7 @@ class Laboratory:
     self.day_start = initial_data['day_start']
     self.night_start = initial_data['night_start']
     self.fumehoods = []
-    self.data = None
+    self.occupancy_data = None
 
   def __str__(self):
     return self.laboratory_name + '-' + str(len(self.fumehoods)) + 'fumehoods'
@@ -43,3 +43,14 @@ def get_laboratory_for_id(id, laboratories):
     if laboratory.laboratory_name == id:
       return laboratory
   return None
+
+def generate_occupancy_per_lab(start_date, end_date, freq, day_start, night_start, occupancy_percent):
+  index = pd.date_range(start_date, end_date, freq=freq)
+  result = []
+  for each in index:
+    if each.hour >= day_start and each.hour <= night_start and np.random.rand(1)[0] > occupancy_percent:
+      result.append(True)
+    else:
+      result.append(False)
+  return pd.Series(result, index=index)
+

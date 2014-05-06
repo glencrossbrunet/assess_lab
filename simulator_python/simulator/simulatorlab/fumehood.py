@@ -69,3 +69,9 @@ def get_hoodmodel_for_id(id, hoodmodels):
     if hoodmodel.model == id:
       return hoodmodel
   return None
+
+def add_fumehood_data_to_fumehoods(df, fumehoods):
+  df = df.groupby('fumehood')
+  for k, v in df:
+    v = v.drop('fumehood')
+    k.data = v

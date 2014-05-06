@@ -81,16 +81,23 @@ def load_environment(data_directory, debug_directory):
     if fumehood.laboratory is not None:
       fumehoods_with_labs.append(fumehood)
 
+  fumehoods = fumehoods_with_labs
+
   debug_f = open(debug_directory + 'environment.txt','w')
   debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')
   debug_f.write('Hoodmodels :\n'                  + str(' | '.join(map(str, hoodmodels))) + '\n\n')
-  debug_f.write('Fumehoods with Laboratories :\n' + str(' | '.join(map(str, fumehoods_with_labs))) + '\n\n')
+  debug_f.write('Fumehoods with Laboratories :\n' + str(' | '.join(map(str, fumehoods))) + '\n\n')
   debug_f.close()
 
   if(verbose):
     print "Finished loading environment"
   return (laboratories, hoodmodels, fumehoods)
 
-def load_datastream():
-  df = load_hoods_datastream('datastream.txt', fumehoods)
-  grouped = preprocess_datastream(df, statistics_directory, fumehoods_with_labs)
+def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
+  df = load_hoods_datastream(data_directory + 'datastream.txt', fumehoods)
+  add_fumehood_data_to_fumehoods(df, fumehoods)
+  for fumehood in fumehoods:
+    fumehood.data = resample_data_to_half_hourly(fumehood.data)
+    print fumehood.data
+
+  grouped = preprocess_datastream(df, statistics_directory, fumehoods)

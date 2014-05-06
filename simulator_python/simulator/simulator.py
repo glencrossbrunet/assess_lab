@@ -13,7 +13,10 @@ statistics_directory = "E:/git/equipmind/assess_lab/stats/"
 
 (laboratories, hoodmodels, fumehoods) = load_environment(data_directory, debug_directory)
 
-# datastream = load_datastream()
+datastream = load_datastream(data_directory, debug_directory, statistics_directory, fumehoods)
+
+populate_occupancy_data_per_lab(laboratories)
+
 
 # lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
 
