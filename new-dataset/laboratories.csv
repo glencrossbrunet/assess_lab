@@ -1,2 +1,2 @@
-laboratory_name,building_name,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied_day,ach_occupied_day,ach_unoccupied_night,ach_occupied_night,additional_evac,total_hoods,day_start,night_start
-otto-mass-119-230;,Otto Maass,119,230,chemistry,jane doe,john smith,10,2265,4,10,4,10,1192,17,08:00,21:00
+laboratory_name,building_name,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied_day,ach_occupied_day,ach_unoccupied_night,ach_occupied_night,additional_evac,total_hoods,day_start,night_start,occupancy_percent
+otto-mass-119-230,Otto Maass,119,230,chemistry,jane doe,john smith,10,2265,4,10,4,10,1192,17,08:00,23:00,0.3

@@ -98,6 +98,5 @@ def load_datastream(data_directory, debug_directory, statistics_directory, fumeh
   add_fumehood_data_to_fumehoods(df, fumehoods)
   for fumehood in fumehoods:
     fumehood.data = resample_data_to_half_hourly(fumehood.data)
-    print fumehood.data
 
-  grouped = preprocess_datastream(df, statistics_directory, fumehoods)
+  # grouped = preprocess_datastream(df, statistics_directory, fumehoods)

@@ -38,6 +38,7 @@ class Fumehood:
     self.installation_notes = initial_data['installation_notes']
     self.prompt_type = initial_data['prompt_type']
     self.data = None
+    self.occupancy_data = None
 
   def __str__(self):
     if self.hood_model.model is None or self.laboratory is None:
@@ -73,5 +74,26 @@ def get_hoodmodel_for_id(id, hoodmodels):
 def add_fumehood_data_to_fumehoods(df, fumehoods):
   df = df.groupby('fumehood')
   for k, v in df:
-    v = v.drop('fumehood')
+    v = v.drop('fumehood', 1)
+    v = v.drop('flow', 1)
+    v.columns = [k]
     k.data = v
+
+def test_flow_vs_open(fumehood):
+  pass
+
+def populate_fumehood_occupancy_data(fumehood):
+  index = fumehood.data.index
+  result = []
+  for each in index:
+    if each.hour >= fumehood.laboratory.day_start.hour and each.hour <= fumehood.laboratory.night_start.hour and np.random.rand(1)[0] < fumehood.laboratory.occupancy_percent:
+      result.append(True)
+    else:
+      result.append(False)
+  fumehood.occupancy_data = pd.Series(result, index=index)
+
+def adjust_cfm_by_occupancy(fumehood):
+  for sample in fumehood.data.index:
+    percent_open = fumehood.data.loc[sample]
+    occ = fumehood.occupancy_data.loc[sample]
+    fumehood.data.loc[sample] = fumehood.finalcfm(percent_open, occ)

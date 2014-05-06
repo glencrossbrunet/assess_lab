@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 class Laboratory:
 
   def __init__(self, initial_data):
@@ -25,8 +28,9 @@ class Laboratory:
                                   self.ach_unoccupied_day, self.additional_evac)
     self.min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, 
                                               self.ach_occupied_day, self.additional_evac)
-    self.day_start = initial_data['day_start']
-    self.night_start = initial_data['night_start']
+    self.day_start = pd.to_datetime(initial_data['day_start'])
+    self.night_start = pd.to_datetime(initial_data['night_start'])
+    self.occupancy_percent = initial_data['occupancy_percent']
     self.fumehoods = []
     self.occupancy_data = None
 
@@ -44,13 +48,16 @@ def get_laboratory_for_id(id, laboratories):
       return laboratory
   return None
 
-def generate_occupancy_per_lab(start_date, end_date, freq, day_start, night_start, occupancy_percent):
-  index = pd.date_range(start_date, end_date, freq=freq)
+def populate_laboratory_occupancy_data(laboratory):
+  index = pd.Series()
+  for fumehood in laboratory.fumehoods:
+    if(len(fumehood.data.index) > len(index)):
+      index = fumehood.data.index
   result = []
+  print "Generating data for laboratory with day from " + str(laboratory.day_start ) + " to " + str(laboratory.night_start) + " with an occupancy rate of " + str(laboratory.occupancy_percent)
   for each in index:
-    if each.hour >= day_start and each.hour <= night_start and np.random.rand(1)[0] > occupancy_percent:
+    if each.hour >= laboratory.day_start.hour and each.hour <= laboratory.night_start.hour and np.random.rand(1)[0] < 0.9:
       result.append(True)
     else:
       result.append(False)
-  return pd.Series(result, index=index)
-
+  laboratory.occupancy_data = pd.Series(result, index=index)
