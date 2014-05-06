@@ -60,14 +60,13 @@ def preprocess_datastream(df, statistics_directory, fumehoods_with_labs):
   per_fumehood = df.groupby('fumehood')
   per_fumehood.describe().to_csv(statistics_directory + 'rawfumehoods-describe.csv')
   per_fumehood_dict = {}
+  
   for fumehood, group in per_fumehood:
     per_fumehood_dict[fumehood] = resample_data_to_hourly(group)
   
-  per_fumehood = pd.DataFrame.from_dict(per_fumehood_dict)
+  # per_fumehood = pd.DataFrame.from_dict(per_fumehood_dict)
 
-  per_fumehood.describe().to_csv(statistics_directory + 'resampledfumehoods-describe.csv')
-
-  # grouped.aggregate(lambda x : resample_data_to_hourly(x))
+  # per_fumehood.describe().to_csv(statistics_directory + 'resampledfumehoods-describe.csv')
 
   return per_fumehood_dict
 
