@@ -12,8 +12,6 @@ class HoodModel:
     self.face_vel_unoccupied = initial_data['face_vel_unoccupied']
     self.min_cfm = initial_data['min_cfm']
     self.max_cfm = initial_data['max_cfm']
-    self.prompt_type = initial_data['prompt_type']
-
 
 class Fumehood:
 
@@ -33,6 +31,8 @@ class Fumehood:
     self.flag_data = initial_data['flag_data']
     self.description_notes = initial_data['description_notes']
     self.installation_notes = initial_data['installation_notes']
+    self.prompt_type = initial_data['prompt_type']
+    
 
   def __str__(self):
     if self.hood_model.model is None or self.laboratory is None:

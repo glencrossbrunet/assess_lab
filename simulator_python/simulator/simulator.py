@@ -12,7 +12,7 @@ statistics_directory = "E:/git/equipmind/assess_lab/stats/"
 
 (laboratories, hoodmodels, fumehoods, fumehood_flowdata) = load_environment(data_directory, debug_directory, statistics_directory)
 
-lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
+# lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
 
 '''
 iterative method

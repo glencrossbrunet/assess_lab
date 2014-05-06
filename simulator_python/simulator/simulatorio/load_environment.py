@@ -1,13 +1,9 @@
 import os, sys
 from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
+from simulatorio.estimators import *
 
 verbose = True
-
-def printer_auxiliary(x):
-  print x
-  print type(x)
-  return x
 
 def load_laboratories(file):
   if(verbose):
@@ -95,6 +91,8 @@ def load_environment(path, debug_directory, statistics_directory):
 
   df = load_hoods_datastream('datastream.txt', fumehoods)
   grouped = preprocess_datastream(df, statistics_directory, fumehoods_with_labs)
+
+
   if(verbose):
     print "Finished loading environment"
   return (laboratories, hoodmodels, fumehoods, grouped)

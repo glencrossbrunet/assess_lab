@@ -9,10 +9,10 @@ def adjust_cfm_for_fumehood_state(series, fumehood):
   return series
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
-  if cfm < laboratory.min_evac_cfm:
-    return laboratory.min_evac_cfm
-  if cfm > laboratory.max_evac_cfm:
-    return laboratory.max_evac_cfm
+  if cfm < laboratory.min_unoccupied_cfm:
+    return laboratory.min_unoccupied_cfm
+  if cfm > laboratory.min_occupied_cfm:
+    return laboratory.min_occupied_cfm
   return cfm
 
 def simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory):
@@ -43,16 +43,12 @@ def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
     # plot_laboratory_flowdata(str(k) + '_hoods', v, output_directory)
     v.to_csv(output_directory + str(k) + '-full.csv')
     v = v.sum(axis=1)
-    print "Lab : " + k.laboratory_name
-    print "Lab Min : " + str(k.min_evac_cfm)
-    print "Lab Max : " + str(k.max_evac_cfm)
     v = v.apply(lambda x : adjust_cfm_for_laboratory_parameters(x, k))
     # plot_laboratory_flowdata(str(k) + '_sum', v, output_directory)
     v.to_csv(output_directory + str(k) + '-sum.csv')
     results[k] =  v
 
   plot_diff_per_lab(results_by_lab, results, output_directory + 'datastream-after-labadjustment')
-
 
 
 def simulate(fumehood_flowdata, laboratories, fumehoods, output_directory):

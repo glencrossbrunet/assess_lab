@@ -61,8 +61,7 @@ def plot_diff_per_lab(a, b, fig_title):
     ax.plot(v.mean(axis=1), label=(str(k) + 'a-mean'))
     ax.plot(v.std(axis=1), label=(str(k) + 'a-std'))
   for k, v in b.iteritems():
-    ax.plot(v.mean(axis=1), label=(str(k) + 'b-mean'))
-    ax.plot(v.std(axis=1), label=(str(k) + 'b-std'))
+    ax.plot(v, label=(str(k) + 'b-sum'))
   box = ax.get_position()
   ax.set_position([box.x0, box.y0 + box.height * 0.1,
                    box.width, box.height * 0.9])
