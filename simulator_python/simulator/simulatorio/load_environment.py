@@ -49,29 +49,27 @@ def load_hoods_datastream(file, fumehoods):
   df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["fumehood", "flow", "open"])
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
 
-  fumehood_converted = df.fumehood.apply(lambda x : get_fumehood_for_bac(x, fumehoods))
-  df["fumehood"] = fumehood_converted
-  print df
+  bac_to_fumehood_series = df.fumehood.apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+  df["fumehood"] = bac_to_fumehood_series
   return df
 
 def preprocess_datastream(df, statistics_directory, fumehoods_with_labs):
   if(verbose):
     print "Printing basic statistics"
   df = df[df.fumehood.isin(fumehoods_with_labs)]
-  df.groupby('fumehood').describe().to_csv(statistics_directory + 'fumehoods-describe.csv')
-  print df
+  per_fumehood = df.groupby('fumehood')
+  per_fumehood.describe().to_csv(statistics_directory + 'rawfumehoods-describe.csv')
+  per_fumehood_dict = {}
+  for fumehood, group in per_fumehood:
+    per_fumehood_dict[fumehood] = resample_data_to_hourly(group)
+  
+  per_fumehood = pd.DataFrame.from_dict(per_fumehood_dict)
 
-  fumehood_flowdata = {}
-  for hood, group in grouped:
-    if hood.laboratory is None:
-      continue
-    if(verbose):
-      print "Processing data for Fumehood: " + str(hood)
-    fumehood_flowdata[hood] = resample_data_to_hourly(group)
+  per_fumehood.describe().to_csv(statistics_directory + 'resampledfumehoods-describe.csv')
 
   # grouped.aggregate(lambda x : resample_data_to_hourly(x))
 
-  return fumehood_flowdata
+  return per_fumehood_dict
 
 def convert_percent_open_to_flow(df, statistics_directory):
   pass
