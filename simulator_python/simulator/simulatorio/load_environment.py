@@ -59,10 +59,6 @@ def preprocess_datastream(df, statistics_directory, fumehoods_with_labs):
   
   for fumehood, group in per_fumehood:
     per_fumehood_dict[fumehood] = resample_data_to_hourly(group)
-  
-  # per_fumehood = pd.DataFrame.from_dict(per_fumehood_dict)
-
-  # per_fumehood.describe().to_csv(statistics_directory + 'resampledfumehoods-describe.csv')
 
   return per_fumehood_dict
 
@@ -70,29 +66,31 @@ def convert_percent_open_to_flow(df, statistics_directory):
   pass
 
 
-def load_environment(path, debug_directory, statistics_directory):
+def load_environment(data_directory, debug_directory):
   if(verbose):
     "Loading environment"
-  os.chdir(path)
 
-  laboratories = load_laboratories('laboratories.csv')
-  print map(str, laboratories)
+  laboratories = load_laboratories(data_directory + 'laboratories.csv')
 
-  hoodmodels = load_hoodmodels('hoodmodels.csv')
-  print map(str, hoodmodels)
+  hoodmodels = load_hoodmodels(data_directory + 'hoodmodels.csv')
 
-  fumehoods = load_fumehoods('fumehoods.csv', laboratories, hoodmodels)
+  fumehoods = load_fumehoods(data_directory + 'fumehoods.csv', laboratories, hoodmodels)
   
   fumehoods_with_labs = []
   for fumehood in fumehoods:
     if fumehood.laboratory is not None:
       fumehoods_with_labs.append(fumehood)
-  print map(str, fumehoods_with_labs)
 
-  df = load_hoods_datastream('datastream.txt', fumehoods)
-  grouped = preprocess_datastream(df, statistics_directory, fumehoods_with_labs)
-
+  debug_f = open(debug_directory + 'environment.txt','w')
+  debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')
+  debug_f.write('Hoodmodels :\n'                  + str(' | '.join(map(str, hoodmodels))) + '\n\n')
+  debug_f.write('Fumehoods with Laboratories :\n' + str(' | '.join(map(str, fumehoods_with_labs))) + '\n\n')
+  debug_f.close()
 
   if(verbose):
     print "Finished loading environment"
-  return (laboratories, hoodmodels, fumehoods, grouped)
+  return (laboratories, hoodmodels, fumehoods)
+
+def load_datastream():
+  df = load_hoods_datastream('datastream.txt', fumehoods)
+  grouped = preprocess_datastream(df, statistics_directory, fumehoods_with_labs)

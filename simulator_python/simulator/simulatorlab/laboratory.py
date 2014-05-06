@@ -27,9 +27,11 @@ class Laboratory:
                                               self.ach_occupied_day, self.additional_evac)
     self.day_start = initial_data['day_start']
     self.night_start = initial_data['night_start']
+    self.fumehoods = []
+    self.data = None
 
   def __str__(self):
-    return self.laboratory_name
+    return self.laboratory_name + '-' + str(len(self.fumehoods)) + 'fumehoods'
 
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
   result = (height * surface_area * ach)/60 + additional_evac

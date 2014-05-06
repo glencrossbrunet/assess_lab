@@ -13,6 +13,9 @@ class HoodModel:
     self.min_cfm = initial_data['min_cfm']
     self.max_cfm = initial_data['max_cfm']
 
+  def __str__(self):
+    return self.model
+
 class Fumehood:
 
   def __init__(self, initial_data, laboratories, hoodmodels):
@@ -22,6 +25,8 @@ class Fumehood:
     self.hood_num = initial_data['hood_num']
     self.workshop = initial_data['workshop']
     self.laboratory = get_laboratory_for_id(initial_data['laboratory'], laboratories)
+    if(self.laboratory is not None):
+      self.laboratory.fumehoods.append(self)
     self.hood_model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
     self.install_time = initial_data['install_time']
     self.follow_up_date = initial_data['follow_up_date']
@@ -32,7 +37,7 @@ class Fumehood:
     self.description_notes = initial_data['description_notes']
     self.installation_notes = initial_data['installation_notes']
     self.prompt_type = initial_data['prompt_type']
-    
+    self.data = None
 
   def __str__(self):
     if self.hood_model.model is None or self.laboratory is None:
