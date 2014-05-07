@@ -37,8 +37,14 @@ def generate_min_evac_series(laboratory):
   laboratory.min_evac_series = pd.Series(result, index=index)
 
 def generate_fumehoods_unadjusted_sum(laboratory):
-  self.fumehoods_unadjusted_sum = get_all_fumehood_data_for_lab(laboratory).copy().sum()
+  laboratory.fumehoods_unadjusted_sum = get_all_fumehood_data_for_lab(laboratory).copy().sum(axis=1)
 
+def generate_fumehoods_adjusted_sum(laboratory):
+  index = laboratory.occupancy_data.index
+  result = []
+  for sample in index:
+    result.append(np.max([laboratory.fumehoods_unadjusted_sum.loc[sample], laboratory.min_evac_series.loc[sample]]))
+  laboratory.fumehoods_adjusted_sum = pd.Series(result, index=index)
 
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):

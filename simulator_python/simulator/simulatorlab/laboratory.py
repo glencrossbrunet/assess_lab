@@ -20,14 +20,14 @@ class Laboratory:
     self.ach_occupied_night = initial_data['ach_occupied_night']
     self.additional_evac = initial_data['additional_evac']
     self.total_hoods = initial_data['total_hoods']
-    self.min_evac_unoccupied_day = generate_min_evac_cfm(self.height, self.surface_area, 
-                                  self.ach_unoccupied_day, self.additional_evac)
-    self.min_evac_occupied_day = generate_min_evac_cfm(self.height, self.surface_area, 
-                                  self.ach_occupied_day, self.additional_evac)
-    self.min_evac_unoccupied_night = generate_min_evac_cfm(self.height, self.surface_area, 
-                                  self.ach_unoccupied_day, self.additional_evac)
-    self.min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, 
-                                              self.ach_occupied_day, self.additional_evac)
+    min_evac_unoccupied_day = generate_min_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_day, self.additional_evac)
+    self.min_evac_unoccupied_day = min_evac_unoccupied_day
+    min_evac_occupied_day = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_day, self.additional_evac)
+    self.min_evac_occupied_day = min_evac_occupied_day
+    min_evac_unoccupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_night, self.additional_evac)
+    self.min_evac_unoccupied_night = min_evac_unoccupied_night
+    min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_night, self.additional_evac)
+    self.min_evac_occupied_night = min_evac_occupied_night
     self.day_start = pd.to_datetime(initial_data['day_start'])
     self.night_start = pd.to_datetime(initial_data['night_start'])
     self.occupancy_percent = initial_data['occupancy_percent']
@@ -35,9 +35,24 @@ class Laboratory:
     self.occupancy_data = None
     self.min_evac_series = None
     self.fumehoods_unadjusted_sum = None
+    self.fumehoods_adjusted_sum = None
+    self.summary = None
+
+  def reset_occupancy_values(ach_unoccupied_day, ach_occupied_day, ach_unoccupied_night, ach_occupied_night):
+    self.ach_unoccupied_day = ach_unoccupied_day
+    self.ach_occupied_day = ach_occupied_day
+    self.ach_unoccupied_night = ach_unoccupied_night
+    self.ach_occupied_night = ach_occupied_night
+    min_evac_unoccupied_day = generate_min_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_day, self.additional_evac)
+    self.min_evac_unoccupied_day = min_evac_unoccupied_day
+    min_evac_occupied_day = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_day, self.additional_evac)
+    self.min_evac_occupied_day = min_evac_occupied_day
+    min_evac_unoccupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_night, self.additional_evac)
+    self.min_evac_unoccupied_night = min_evac_unoccupied_night
+    min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_night, self.additional_evac)
 
   def __str__(self):
-    return self.laboratory_name + '-' + str(len(self.fumehoods)) + 'fumehoods'
+    return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night ])))
 
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
   result = (height * surface_area * ach)/60 + additional_evac
@@ -67,4 +82,7 @@ def get_all_fumehood_data_for_lab(laboratory):
   return pd.concat([fumehood.data for fumehood in laboratory.fumehoods], join='outer', axis = 1)
 
 def laboratory_summary(laboratory):
-  return pd.concat([laboratory.occupancy_data, laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum], join='outer', axis = 1)
+  df = pd.concat([laboratory.occupancy_data, laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum, laboratory.fumehoods_adjusted_sum], join='outer', axis = 1)
+  df.columns = ["occupancy", "minimum", "hood_undjusted_sum", "hood_adjusted_sum"]
+  laboratory.summary = df
+  return df

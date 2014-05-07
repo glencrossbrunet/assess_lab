@@ -20,13 +20,18 @@ load_datastream(data_directory, debug_directory, statistics_directory, fumehoods
 
 # dat control flow
 for laboratory in laboratories:
+  print "Processing " + str(laboratory)
   populate_laboratory_occupancy_data(laboratory)
   generate_min_evac_series(laboratory)
   fumehoods_cfms = generate_fumehood_cfms_for_laboratory(laboratory)
   fumehoods_cfms.to_csv(output_directory + '/fumehoods_adjusted_cfm/' + str(laboratory) + '-all_fumehoods.csv')
   generate_fumehoods_unadjusted_sum(laboratory)
+  generate_fumehoods_adjusted_sum(laboratory)
   laboratory_summary = laboratory_summary(laboratory)
   laboratory_summary.to_csv(output_directory + '/fumehoods_adjusted_cfm/' + str(laboratory) + '-summary.csv')
+
+  basic_plot_for_lab(laboratory, output_directory + '/plots/' + str(laboratory) + '-basic.pdf')
+  bootstrap_for_lab(laboratory, output_directory + '/plots/' + str(laboratory) + '-bootstrap.pdf')
 
 # combined.to_csv('debug.csv')
 

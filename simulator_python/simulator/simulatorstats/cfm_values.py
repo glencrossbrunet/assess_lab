@@ -1,12 +1,25 @@
 import pylab as plt
 import pandas as pd
 import numpy as np
+import prettyplotlib as ppl
 from pandas.tools.plotting import bootstrap_plot
 
-def plot_fumehood_to_flowdata(fumehood_flowdata, output_dir):
-  for fumehood, flowdata in fumehood_flowdata.iteritems():
-    fig = flowdata.plot()
-    plt.savefig(output_dir + fumehood.hood_id + '-flowdata.pdf')
+def bootstrap_for_lab(laboratory, fig_title):
+  fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=True)
+  ax1 = bootstrap_plot(laboratory.min_evac_series)
+  ax2 = bootstrap_plot(laboratory.fumehoods_unadjusted_sum)
+  ax3 = bootstrap_plot(laboratory.fumehoods_adjusted_sum)
+ # ax1.sup_title('min_evac_series')
+ # ax2.sup_title('fumehoods_unadjusted_sum')
+ # ax3.sup_title('fumehoods_adjusted_sum')
+  fig.tight_layout()
+  plt.savefig(fig_title)
+
+def basic_plot_for_lab(laboratory, fig_title):
+  fig, ax = plt.subplots(1)
+  ax = laboratory.summary.plot(kind='line')
+  fig.tight_layout()
+  plt.savefig(fig_title)
 
 def plot_laboratory_flowdata(lab, laboratory_cfm, output_dir):
   fig = laboratory_cfm.plot()
