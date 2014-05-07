@@ -38,7 +38,8 @@ class Laboratory:
     self.fumehoods_adjusted_sum = None
     self.summary = None
 
-  def reset_occupancy_values(ach_unoccupied_day, ach_occupied_day, ach_unoccupied_night, ach_occupied_night):
+  def reset_occupancy_values(self, ach_unoccupied_day, ach_occupied_day, ach_unoccupied_night, ach_occupied_night, occupancy_percent):
+    self.occupancy_percent = occupancy_percent
     self.ach_unoccupied_day = ach_unoccupied_day
     self.ach_occupied_day = ach_occupied_day
     self.ach_unoccupied_night = ach_unoccupied_night
@@ -51,8 +52,15 @@ class Laboratory:
     self.min_evac_unoccupied_night = min_evac_unoccupied_night
     min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_night, self.additional_evac)
 
+  def reset_laboratory(self):
+    self.occupancy_data = None
+    self.min_evac_series = None
+    self.fumehoods_unadjusted_sum = None
+    self.fumehoods_adjusted_sum = None
+    self.summary = None  
+
   def __str__(self):
-    return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night ])))
+    return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.occupancy_percent])))
 
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
   result = (height * surface_area * ach)/60 + additional_evac

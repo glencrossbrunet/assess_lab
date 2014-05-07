@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import prettyplotlib as ppl
 from pandas.tools.plotting import bootstrap_plot
+from pandas.tools.plotting import andrews_curves
+
 
 def bootstrap_for_lab(laboratory, fig_title):
   fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, sharey=True)
@@ -15,11 +17,18 @@ def bootstrap_for_lab(laboratory, fig_title):
   fig.tight_layout()
   plt.savefig(fig_title)
 
+def andrews_for_lab(laboratory, fig_title):
+  fig = plt.figure()
+  andrews_curves(laboratory.summary, 'Andrews Curves for Lab')
+  fig.tight_layout()
+  plt.savefig(fig_title)
+
 def basic_plot_for_lab(laboratory, fig_title):
   fig, ax = plt.subplots(1)
   ax = laboratory.summary.plot(kind='line')
   fig.tight_layout()
   plt.savefig(fig_title)
+
 
 def plot_laboratory_flowdata(lab, laboratory_cfm, output_dir):
   fig = laboratory_cfm.plot()
