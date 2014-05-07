@@ -33,6 +33,8 @@ class Laboratory:
     self.occupancy_percent = initial_data['occupancy_percent']
     self.fumehoods = []
     self.occupancy_data = None
+    self.min_evac_series = None
+    self.fumehoods_unadjusted_sum = None
 
   def __str__(self):
     return self.laboratory_name + '-' + str(len(self.fumehoods)) + 'fumehoods'
@@ -41,6 +43,19 @@ def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
   result = (height * surface_area * ach)/60 + additional_evac
   return result
 
+def get_min_evac_cfm_for_time(time, occupied, laboratory):
+  if time.hour >= laboratory.day_start.hour and time.hour <= laboratory.night_start.hour:
+    if occupied:
+      return laboratory.min_evac_occupied_day
+    else:
+      return laboratory.min_evac_unoccupied_day
+  else:
+    if occupied:
+      return laboratory.min_evac_occupied_night
+    else:
+      return laboratory.min_evac_occupied_day
+  return None
+
 
 def get_laboratory_for_id(id, laboratories):
   for laboratory in laboratories:
@@ -48,15 +63,8 @@ def get_laboratory_for_id(id, laboratories):
       return laboratory
   return None
 
-def populate_laboratory_occupancy_data(laboratory):
-  index = pd.Series()
-  for fumehood in laboratory.fumehoods:
-    if(len(fumehood.data.index) > len(index)):
-      index = fumehood.data.index
-  result = []
-  for each in index:
-    if each.hour >= laboratory.day_start.hour and each.hour <= laboratory.night_start.hour and np.random.rand(1)[0] < 0.95:
-      result.append(True)
-    else:
-      result.append(False)
-  laboratory.occupancy_data = pd.Series(result, index=index)
+def get_all_fumehood_data_for_lab(laboratory):
+  return pd.concat([fumehood.data for fumehood in laboratory.fumehoods], join='outer', axis = 1)
+
+def laboratory_summary(laboratory):
+  return pd.concat([laboratory.occupancy_data, laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum], join='outer', axis = 1)

@@ -2,11 +2,44 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from simulatorstats.cfm_values import *
+from simulatorlab.fumehood import *
 
-def adjust_cfm_for_fumehood_state(series, fumehood):
-  new_cfm = fumehood.finalcfm(series.ix['open'], True)
-  series.ix['flow'] = new_cfm
-  return series
+
+def generate_fumehood_cfms_for_laboratory(laboratory):
+  for fumehood in laboratory.fumehoods:
+    populate_fumehood_occupancy_data(fumehood)
+  for fumehood in laboratory.fumehoods:
+      adjust_cfm_by_occupancy(fumehood)
+  for fumehood in laboratory.fumehoods:
+      df = fumehood.data.copy()
+      df['occupancy'] = fumehood.occupancy_data
+  result = get_all_fumehood_data_for_lab(laboratory)
+  return result
+
+def populate_laboratory_occupancy_data(laboratory):
+  index = pd.Series()
+  for fumehood in laboratory.fumehoods:
+    if(len(fumehood.data.index) > len(index)):
+      index = fumehood.data.index
+  result = []
+  for each in index:
+    if each.hour >= laboratory.day_start.hour and each.hour <= laboratory.night_start.hour and np.random.rand(1)[0] < 0.95:
+      result.append(True)
+    else:
+      result.append(False)
+  laboratory.occupancy_data = pd.Series(result, index=index)
+
+def generate_min_evac_series(laboratory):
+  index = laboratory.occupancy_data.index
+  result = []
+  for sample in index:
+    result.append(get_min_evac_cfm_for_time(sample, laboratory.occupancy_data.loc[sample], laboratory))
+  laboratory.min_evac_series = pd.Series(result, index=index)
+
+def generate_fumehoods_unadjusted_sum(laboratory):
+  self.fumehoods_unadjusted_sum = get_all_fumehood_data_for_lab(laboratory).copy().sum()
+
+
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
   if cfm < laboratory.min_unoccupied_cfm:

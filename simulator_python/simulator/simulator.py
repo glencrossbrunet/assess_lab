@@ -14,20 +14,21 @@ statistics_directory = "E:/git/equipmind/assess_lab/stats/"
 
 load_datastream(data_directory, debug_directory, statistics_directory, fumehoods)
 
+# for laboratory in laboratories:
+#     result = generate_fumehood_cfms_for_laboratory(laboratory)
+#     result.to_csv(output_directory + str(laboratory) + '-all_fumehoods.csv')
+
+# dat control flow
 for laboratory in laboratories:
-    populate_laboratory_occupancy_data(laboratory)
+  populate_laboratory_occupancy_data(laboratory)
+  generate_min_evac_series(laboratory)
+  fumehoods_cfms = generate_fumehood_cfms_for_laboratory(laboratory)
+  fumehoods_cfms.to_csv(output_directory + '/fumehoods_adjusted_cfm/' + str(laboratory) + '-all_fumehoods.csv')
+  generate_fumehoods_unadjusted_sum(laboratory)
+  laboratory_summary = laboratory_summary(laboratory)
+  laboratory_summary.to_csv(output_directory + '/fumehoods_adjusted_cfm/' + str(laboratory) + '-summary.csv')
 
-for fumehood in fumehoods:
-    populate_fumehood_occupancy_data(fumehood)
+# combined.to_csv('debug.csv')
 
-for fumehood in fumehoods:
-    adjust_cfm_by_occupancy(fumehood)
 
-for fumehood in fumehoods:
-    df = fumehood.data.copy()
-    df['occupancy'] = fumehood.occupancy_data
-    df.to_csv(output_directory + "fumehoods_adjusted_cfm/" + str(fumehood) + ".csv")
-
-combined =  pd.concat([fumehood.data for fumehood in fumehoods], join='outer', axis = 1)
-combined.to_csv('debug.csv')
 # lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
