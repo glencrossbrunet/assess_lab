@@ -54,9 +54,8 @@ def populate_laboratory_occupancy_data(laboratory):
     if(len(fumehood.data.index) > len(index)):
       index = fumehood.data.index
   result = []
-  print "Generating data for laboratory with day from " + str(laboratory.day_start ) + " to " + str(laboratory.night_start) + " with an occupancy rate of " + str(laboratory.occupancy_percent)
   for each in index:
-    if each.hour >= laboratory.day_start.hour and each.hour <= laboratory.night_start.hour and np.random.rand(1)[0] < 0.9:
+    if each.hour >= laboratory.day_start.hour and each.hour <= laboratory.night_start.hour and np.random.rand(1)[0] < 0.95:
       result.append(True)
     else:
       result.append(False)

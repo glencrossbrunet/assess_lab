@@ -20,14 +20,14 @@ for laboratory in laboratories:
 for fumehood in fumehoods:
     populate_fumehood_occupancy_data(fumehood)
 
-fumehoods[0].data.to_csv('debug-a.csv')
-
 for fumehood in fumehoods:
     adjust_cfm_by_occupancy(fumehood)
 
-fumehoods[0].data.to_csv('debug-b.csv')
+for fumehood in fumehoods:
+    df = fumehood.data.copy()
+    df['occupancy'] = fumehood.occupancy_data
+    df.to_csv(output_directory + "fumehoods_adjusted_cfm/" + str(fumehood) + ".csv")
 
-
-print pd.concat([fumehood.data for fumehood in fumehoods])
-
+combined =  pd.concat([fumehood.data for fumehood in fumehoods], join='outer', axis = 1)
+combined.to_csv('debug.csv')
 # lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
