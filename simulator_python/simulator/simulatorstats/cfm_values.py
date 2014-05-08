@@ -1,7 +1,9 @@
-import pylab as plt
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 import pandas as pd
 import numpy as np
 import prettyplotlib as ppl
+from prettyplotlib import brewer2mpl
 from pandas.tools.plotting import bootstrap_plot
 from pandas.tools.plotting import andrews_curves
 
@@ -25,8 +27,10 @@ def andrews_for_lab(laboratory, fig_title):
 
 def basic_plot_for_lab(laboratory, fig_title):
   fig, ax = plt.subplots(1)
-  ax = laboratory.summary.plot(kind='line')
+  for k, v in laboratory.summary.iteritems():
+    ppl.plot(ax, laboratory.summary.index, v, label=k, linewidth=0.75)
   fig.tight_layout()
+  ppl.legend(ax, loc='lower left', ncol=2)
   plt.savefig(fig_title)
 
 
