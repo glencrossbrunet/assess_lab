@@ -19,12 +19,12 @@ load_datastream(data_directory, debug_directory, statistics_directory, fumehoods
 #     result.to_csv(output_directory + str(laboratory) + '-all_fumehoods.csv')
 
 # dat control flow
-params = [[4,10,2,6,.3], [2,6,2,4,.4]]
+params = [[4,10,4,10,.7], [4,10,2,6,.3], [4,8,2,4,.7], [4,8,2,4,.3], [2,6,2,4,.4]]
 
 for param in params:
   for laboratory in laboratories:
     laboratory.reset_occupancy_values(param[0], param[1], param[2], param[3], param[4])
-    laboratory.reset_laboratory()
+    laboratory.reset()
     lab_directory = os.path.dirname(output_directory + str(laboratory) + '/')
     if not os.path.exists(lab_directory):
       os.makedirs(lab_directory)
@@ -35,7 +35,7 @@ for param in params:
     fumehoods_cfms.to_csv(str(lab_directory) + '/all_fumehoods.csv')
     generate_fumehoods_unadjusted_sum(laboratory)
     generate_fumehoods_adjusted_sum(laboratory)
-    laboratory_summary = laboratory_summary(laboratory)
+    laboratory_summary = generate_laboratory_summary(laboratory)
     laboratory_summary.to_csv(str(lab_directory) + '/laboratory-summary.csv')
     basic_plot_for_lab(laboratory, str(lab_directory) + '/lab-line-basic.pdf')
     # andrews_for_lab(laboratory, str(lab_directory) + 'andrews_for_lab.pdf')

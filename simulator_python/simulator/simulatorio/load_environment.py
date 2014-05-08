@@ -95,8 +95,8 @@ def load_environment(data_directory, debug_directory):
 
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
   df = load_hoods_datastream(data_directory + 'datastream.txt', fumehoods)
-  add_fumehood_data_to_fumehoods(df, fumehoods)
+  add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
   for fumehood in fumehoods:
-    fumehood.data = resample_data_to_half_hourly(fumehood.data)
+    fumehood.unadjusted_data = resample_data_to_half_hourly(fumehood.unadjusted_data)
 
   # grouped = preprocess_datastream(df, statistics_directory, fumehoods)

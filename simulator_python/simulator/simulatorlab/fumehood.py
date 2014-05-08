@@ -38,12 +38,17 @@ class Fumehood:
     self.installation_notes = initial_data['installation_notes']
     self.prompt_type = initial_data['prompt_type']
     self.data = None
+    self.unadjusted_data = None
     self.occupancy_data = None
 
   def __str__(self):
     if self.hood_model.model is None or self.laboratory is None:
       return self.hood_id + "__incomplete-metadata"
     return self.hood_id + '__' + self.hood_model.model + '__' + self.laboratory.laboratory_name
+
+  def reset(self):
+    if(self.unadjusted_data is not None):
+      self.data = self.unadjusted_data.copy()
 
   def facevelocity(self, occupied):
     if occupied:
@@ -71,13 +76,13 @@ def get_hoodmodel_for_id(id, hoodmodels):
       return hoodmodel
   return None
 
-def add_fumehood_data_to_fumehoods(df, fumehoods):
+def add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods):
   df = df.groupby('fumehood')
   for k, v in df:
     v = v.drop('fumehood', 1)
     v = v.drop('flow', 1)
     v.columns = [k]
-    k.data = v
+    k.unadjusted_data = v
 
 def test_flow_vs_open(fumehood):
   pass
