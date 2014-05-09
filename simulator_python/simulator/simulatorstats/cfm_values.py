@@ -3,6 +3,7 @@ import matplotlib as mpl
 import pandas as pd
 import numpy as np
 import prettyplotlib as ppl
+import seaborn as sns
 from prettyplotlib import brewer2mpl
 from pandas.tools.plotting import bootstrap_plot
 from pandas.tools.plotting import andrews_curves
@@ -19,46 +20,40 @@ def bootstrap_for_lab(laboratory, fig_title):
   fig.tight_layout()
   plt.savefig(fig_title)
 
-def andrews_for_lab(laboratory, fig_title):
-  fig = plt.figure()
-  andrews_curves(laboratory.summary, 'Andrews Curves for Lab')
-  fig.tight_layout()
-  plt.savefig(fig_title)
-
 def basic_plot_for_lab(laboratory, fig_title):
-  fig, ax = plt.subplots(1)
-  for k, v in laboratory.summary.iteritems():
-    ppl.plot(ax, laboratory.summary.index, v, label=k, linewidth=0.75)
-  fig.tight_layout()
-  ppl.legend(ax, loc='lower left', ncol=2)
+  laboratory.summary.plot()
+  plt.legend(loc='best')
+  plt.suptitle('laboratory summary')
+  plt.tight_layout()
   plt.savefig(fig_title)
 
-
-def plot_laboratory_flowdata(lab, laboratory_cfm, output_dir):
-  fig = laboratory_cfm.plot()
-  plt.savefig(output_dir + str(lab) + '-flowdata.pdf')
-
-def plot_summary_per_lab(results_by_lab, fig_title):
-  fig = plt.figure()
-  ax = plt.subplot(111)
-  for k, v in results_by_lab:
-    ax.plot(v.mean(axis=1), label=(str(k) + '-mean'))
-    ax.plot(v.std(axis=1), label=(str(k) + '-std'))
-  box = ax.get_position()
-  ax.set_position([box.x0, box.y0 + box.height * 0.1,
-                   box.width, box.height * 0.9])
-  ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-            fancybox=True, shadow=True, ncol=2)
+def basic_plot_for_savings(savings, fig_title):
+  savings.plot()
+  plt.legend(loc='best')
+  plt.suptitle('laboratory summary')
   plt.tight_layout()
-  plt.savefig(fig_title + "-std-mean.pdf")
+  plt.savefig(fig_title)
 
-  for k, v in results_by_lab:
-    v.corr().to_csv(fig_title + str(k) + '-correlation.csv')
-    v.corr().mean().describe().to_csv(fig_title + str(k) + '-correlation-description.csv')
+def cumulative_plot_for_savings(savings, fig_title):
+  savings.cumsum().plot()
+  plt.legend(loc='best')
+  plt.suptitle('laboratory summary')
+  plt.tight_layout()
+  plt.savefig(fig_title)
 
-  for k, v in results_by_lab:
-    fig = plt.figure()
-    v.plot(colormap='jet', legend=False)
-    plt.tight_layout()
-    plt.savefig(fig_title + str(k) + '-allfumehoods.pdf')
+def summary_description_plot(df, fig_title):
+  fig = plt.figure()
+  df.summary.describe().plot(kind='bar')
+  plt.legend(loc='best')
+  plt.tight_layout()
+  plt.savefig(fig_title)
 
+def plot_stats_over_time(df, fig_title):
+  df.transpose().describe().transpose().drop(['25%','50%','75%','count','std'], axis=1).plot()
+  plt.legend(loc='best')
+  plt.tight_layout()
+  plt.savefig(fig_title)
+
+def fumehood_data_correlation_plot(laboratory, fig_title):
+  sns.corrplot(laboratory.fumehood_data, annot=False, diag_names=False)
+  plt.savefig(fig_title)

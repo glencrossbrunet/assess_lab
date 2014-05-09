@@ -46,6 +46,10 @@ def generate_fumehoods_adjusted_sum(laboratory):
     result.append(np.max([laboratory.fumehoods_unadjusted_sum.loc[sample], laboratory.min_evac_series.loc[sample]]))
   laboratory.fumehoods_adjusted_sum = pd.Series(result, index=index)
 
+def generate_savings(hood_adjusted_sum, hood_unadjusted_sum):
+  df = pd.DataFrame(hood_adjusted_sum - hood_unadjusted_sum)
+  df.columns = ['cfm_savings']
+  return df
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
   if cfm < laboratory.min_unoccupied_cfm:
@@ -89,7 +93,3 @@ def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
 
   plot_diff_per_lab(results_by_lab, results, output_directory + 'datastream-after-labadjustment')
 
-
-def simulate(fumehood_flowdata, laboratories, fumehoods, output_directory):
-  simulated_df = simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory)
-  simulate_per_lab(simulated_df, laboratories, output_directory)

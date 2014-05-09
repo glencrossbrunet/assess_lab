@@ -1,6 +1,6 @@
 from simulatorio.scrapedfile import *
 from simulatorio.load_environment import *
-import os, sys
+import os, sys, copy
 from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
 from simulatorlogic import *
@@ -19,10 +19,16 @@ load_datastream(data_directory, debug_directory, statistics_directory, fumehoods
 #     result.to_csv(output_directory + str(laboratory) + '-all_fumehoods.csv')
 
 # dat control flow
-params = [[4,10,4,10,.7], [4,10,2,6,.3], [4,8,2,4,.7], [4,8,2,4,.3], [2,6,2,4,.4]]
+params = [[4,10,4,10,.3], [4,8,2,6,.4]]
 
-for param in params:
-  for laboratory in laboratories:
+laboratory_results = []
+savings_results = []
+
+
+for laboratory in laboratories:
+  if not os.path.exists(output_directory + laboratory.laboratory_name + "/"):
+    os.makedirs(output_directory + laboratory.laboratory_name + "/")
+  for param in params:
     laboratory.reset_occupancy_values(param[0], param[1], param[2], param[3], param[4])
     laboratory.reset()
     lab_directory = os.path.dirname(output_directory + str(laboratory) + '/')
@@ -35,11 +41,23 @@ for param in params:
     fumehoods_cfms.to_csv(str(lab_directory) + '/all_fumehoods.csv')
     generate_fumehoods_unadjusted_sum(laboratory)
     generate_fumehoods_adjusted_sum(laboratory)
-    laboratory_summary = generate_laboratory_summary(laboratory)
-    laboratory_summary.to_csv(str(lab_directory) + '/laboratory-summary.csv')
+    generate_laboratory_summary(laboratory)
+    laboratory.summary.to_csv(str(lab_directory) + '/laboratory-summary.csv')
     basic_plot_for_lab(laboratory, str(lab_directory) + '/lab-line-basic.pdf')
-    # andrews_for_lab(laboratory, str(lab_directory) + 'andrews_for_lab.pdf')
-# combined.to_csv('debug.csv')
+    plot_stats_over_time(laboratory.fumehood_data, str(lab_directory) + '/fumehoods-std-mean.pdf')
+    fumehood_data_correlation_plot(laboratory, str(lab_directory) + '/fumehood-data-correlation-plot.pdf')
+    savings = generate_savings(laboratory.summary['hood_adjusted_sum'], laboratory.summary['hood_unadjusted_sum'])
+    basic_plot_for_savings(savings, str(lab_directory) + '/basic-savings-plot.pdf')
+    cumulative_plot_for_savings(savings, str(lab_directory) + '/basic-cummulative-savings-plot.pdf')
+    laboratory_results.append(laboratory.summary)
+    savings_results.append(savings)
 
+  all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
+  all_savings = pd.concat([x for x in savings_results], join='outer', axis = 1)
+  all_savings_cummulative = pd.concat([x.cumsum() for x in savings_results], join='outer', axis = 1)
 
-# lab_cfms = simulate(fumehood_flowdata, laboratories, fumehoods, output_directory)
+  plot_stats_over_time(all_adjusted_sums, output_directory + laboratory.laboratory_name + '/adjusted_sums_summary.pdf')
+
+  plot_stats_over_time(all_savings, output_directory + laboratory.laboratory_name + '/savings_summary.pdf')  
+
+  plot_stats_over_time(all_savings_cummulative, output_directory + laboratory.laboratory_name + '/savings_summary.pdf')

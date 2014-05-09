@@ -37,6 +37,7 @@ class Laboratory:
     self.fumehoods_unadjusted_sum = None
     self.fumehoods_adjusted_sum = None
     self.summary = None
+    self.fumehood_data = None
 
   def reset_occupancy_values(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_occupancy_percent):
     self.occupancy_percent = new_occupancy_percent
@@ -89,10 +90,11 @@ def get_laboratory_for_id(id, laboratories):
   return None
 
 def get_all_fumehood_data_for_lab(laboratory):
-  return pd.concat([fumehood.data for fumehood in laboratory.fumehoods], join='outer', axis = 1)
+  laboratory.fumehood_data = pd.concat([fumehood.data for fumehood in laboratory.fumehoods], join='outer', axis = 1)
+  return laboratory.fumehood_data
 
 def generate_laboratory_summary(laboratory):
-  df = pd.concat([laboratory.occupancy_data, laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum, laboratory.fumehoods_adjusted_sum], join='outer', axis = 1)
-  df.columns = ["occupancy", "minimum", "hood_undjusted_sum", "hood_adjusted_sum"]
+  df = pd.concat([laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum, laboratory.fumehoods_adjusted_sum], join='outer', axis = 1)
+  df.columns = ["minimum_evac", "hood_unadjusted_sum", "hood_adjusted_sum"]
   laboratory.summary = df
   return df
