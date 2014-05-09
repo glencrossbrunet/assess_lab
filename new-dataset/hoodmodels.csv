@@ -1,2 +1,3 @@
 model,max_sash_height,sash_width,face_vel_occupied,face_vel_unoccupied,min_cfm,max_cfm
 mcgill-standard,28,50,100,60,200,650
+otto-1,25,36,100,60,200,800
