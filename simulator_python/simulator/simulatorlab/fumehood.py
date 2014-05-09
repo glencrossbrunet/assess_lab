@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import random
 from simulatorlab.laboratory import *
 
 class HoodModel:
@@ -87,6 +88,13 @@ def add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods):
 def test_flow_vs_open(fumehood):
   pass
 
+def link_missing_sample_data_for_random_fumehoods(fumehoods):
+  for fumehood in fumehoods:
+    if fumehood.unadjusted_data is None:
+      for fumehood_prime in fumehoods:
+        if fumehood_prime.unadjusted_data is not None and fumehood_prime.bac == fumehood.bac:
+          fumehood.unadjusted_data = fumehood_prime.unadjusted_data
+
 def populate_fumehood_occupancy_data(fumehood):
   index = fumehood.data.index
   result = []
@@ -102,3 +110,9 @@ def adjust_cfm_by_occupancy(fumehood):
     percent_open = fumehood.data.loc[sample]
     occ = fumehood.occupancy_data.loc[sample]
     fumehood.data.loc[sample] = fumehood.finalcfm(percent_open, occ)
+
+def get_random_working_bac(fumehoods, bac):
+  if bac == -1:
+    return get_random_working_bac(fumehoods, fumehoods[random.randint(0,len(fumehoods) -1)].bac)
+  else:
+    return bac

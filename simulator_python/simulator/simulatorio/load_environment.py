@@ -83,6 +83,11 @@ def load_environment(data_directory, debug_directory):
 
   fumehoods = fumehoods_with_labs
 
+  for fumehood in fumehoods:
+    if fumehood.bac == -1:
+      fumehood.bac = get_random_working_bac(fumehoods, -1)
+      print fumehood.bac
+
   debug_f = open(debug_directory + 'environment.txt','w')
   debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')
   debug_f.write('Hoodmodels :\n'                  + str(' | '.join(map(str, hoodmodels))) + '\n\n')
@@ -96,6 +101,7 @@ def load_environment(data_directory, debug_directory):
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
   df = load_hoods_datastream(data_directory + 'datastream-test.txt', fumehoods)
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
+  link_missing_sample_data_for_random_fumehoods(fumehoods)
   for fumehood in fumehoods:
     fumehood.unadjusted_data = resample_data_to_half_hourly(fumehood.unadjusted_data)
 
