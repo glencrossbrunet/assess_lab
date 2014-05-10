@@ -86,7 +86,6 @@ def load_environment(data_directory, debug_directory):
   for fumehood in fumehoods:
     if fumehood.bac == -1:
       fumehood.bac = get_random_working_bac(fumehoods, -1)
-      print fumehood.bac
 
   debug_f = open(debug_directory + 'environment.txt','w')
   debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')

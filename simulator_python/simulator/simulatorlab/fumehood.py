@@ -95,6 +95,16 @@ def link_missing_sample_data_for_random_fumehoods(fumehoods):
         if fumehood_prime.unadjusted_data is not None and fumehood_prime.bac == fumehood.bac:
           fumehood.unadjusted_data = fumehood_prime.unadjusted_data
 
+def generate_sample_data_for_random_fumehoods_by_random_sample(fumehoods, samples):
+  fumehoods_with_unadjusted = []
+  for fumehood in fumehoods:
+    if fumehood.unadjusted_data is not None:
+      fumehoods_with_unadjusted.append(fumehood)
+
+  for fumehood in fumehoods:
+    if fumehood.unadjusted_data is None:
+      fumehood.unadjusted_data = pd.concat([hood.unadjusted_sum for hood in random.sample(set([fumehoods_with_unadjusted]), samples)])
+
 def populate_fumehood_occupancy_data(fumehood):
   index = fumehood.data.index
   result = []

@@ -5,59 +5,84 @@ from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
 from simulatorlogic import *
 
-data_directory = "E:/git/equipmind/assess_lab/new-dataset/"
-output_directory = "E:/git/equipmind/assess_lab/output/"
-debug_directory = "E:/git/equipmind/assess_lab/debug/"
-statistics_directory = "E:/git/equipmind/assess_lab/stats/"
+data_dir = "E:/git/equipmind/assess_lab/new-dataset/"
+output_dir = "E:/git/equipmind/assess_lab/output/"
+debug_dir = "E:/git/equipmind/assess_lab/debug/"
+statistics_dir = "E:/git/equipmind/assess_lab/stats/"
 
-(laboratories, hoodmodels, fumehoods) = load_environment(data_directory, debug_directory)
-
-load_datastream(data_directory, debug_directory, statistics_directory, fumehoods)
+def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
+  (laboratories, hoodmodels, fumehoods) = load_environment(data_dir, debug_dir)
+  load_datastream(data_dir, debug_dir, statistics_dir, fumehoods)
+  return (laboratories, hoodmodels, fumehoods)
 
 # for laboratory in laboratories:
 #     result = generate_fumehood_cfms_for_laboratory(laboratory)
-#     result.to_csv(output_directory + str(laboratory) + '-all_fumehoods.csv')
+#     result.to_csv(output_dir + str(laboratory) + '-all_fumehoods.csv')
 
 # dat control flow
-params = [[4,10,4,10,.3], [4,8,2,6,.4]]
+params = [["Current Operating Settings",4,10,4,10,.3]
+          ,["Reduced ACH At Night",4,10,3,6,.3]
+          ,["Reduced All ACH",4,8,3,5,.3]
+          ,["Current Operation Without Occupation Sensors",4,10,3,6,1]
+         ]
+
+def fill_values_in_laboratory_struct(laboratory):
+  populate_laboratory_occupancy_data(laboratory)
+  generate_min_evac_series(laboratory)
+  generate_fumehood_cfms_for_laboratory(laboratory)
+  generate_fumehoods_unadjusted_sum(laboratory)
+  generate_fumehoods_adjusted_sum(laboratory)
+  generate_laboratory_summary(laboratory)
 
 laboratory_results = []
 savings_results = []
 
-
-for laboratory in laboratories:
-  if not os.path.exists(output_directory + laboratory.laboratory_name + "/"):
-    os.makedirs(output_directory + laboratory.laboratory_name + "/")
+def evaluate_laboratory(laboratory):
+  lab_top_dir = output_dir + laboratory.laboratory_name + "/"
+  if not os.path.exists(lab_top_dir):
+    os.makedirs(lab_top_dir)
+  results_file = open(lab_top_dir + "/laboratory-results.csv",'w')
+  results_file.write("SIMULATION RESULTS\n")
+  results_file.write("Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Minimum Evac,Excess Fumehood Evac,Savings\n")
   for param in params:
-    laboratory.reset_occupancy_values(param[0], param[1], param[2], param[3], param[4])
-    laboratory.reset()
-    lab_directory = os.path.dirname(output_directory + str(laboratory) + '/')
-    if not os.path.exists(lab_directory):
-      os.makedirs(lab_directory)
-    print "Processing " + str(laboratory)
-    populate_laboratory_occupancy_data(laboratory)
-    generate_min_evac_series(laboratory)
-    fumehoods_cfms = generate_fumehood_cfms_for_laboratory(laboratory)
-    fumehoods_cfms.to_csv(str(lab_directory) + '/all_fumehoods.csv')
-    generate_fumehoods_unadjusted_sum(laboratory)
-    generate_fumehoods_adjusted_sum(laboratory)
-    generate_laboratory_summary(laboratory)
-    laboratory.summary.to_csv(str(lab_directory) + '/laboratory-summary.csv')
-    basic_plot_for_lab(laboratory, str(lab_directory) + '/lab-line-basic.pdf')
-    plot_stats_over_time(laboratory.fumehood_data, str(lab_directory) + '/fumehoods-std-mean.pdf')
-    fumehood_data_correlation_plot(laboratory, str(lab_directory) + '/fumehood-data-correlation-plot.pdf')
-    savings = generate_savings(laboratory.summary['hood_adjusted_sum'], laboratory.summary['hood_unadjusted_sum'])
-    basic_plot_for_savings(savings, str(lab_directory) + '/basic-savings-plot.pdf')
-    cumulative_plot_for_savings(savings, str(lab_directory) + '/basic-cummulative-savings-plot.pdf')
-    laboratory_results.append(laboratory.summary)
-    savings_results.append(savings)
+    evaluate_laboratory_by_parameter(laboratory, param)
+
+def evaluate_laboratory_by_parameter(laboratory, param):
+  laboratory.reset_occupancy_values(param[1], param[2], param[3], param[4], param[5])
+  laboratory.reset()
+  lab_dir = os.path.dirname(output_dir + str(laboratory) + '/')
+  if not os.path.exists(lab_dir):
+    os.makedirs(lab_dir)
+  print "Processing " + str(laboratory)
+  fill_values_in_laboratory_struct(laboratory)
+  laboratory.summary.to_csv(str(lab_dir) + '/laboratory-summary.csv')
+  basic_plot_for_lab(laboratory, str(lab_dir) + '/lab-line-basic.pdf')
+  plot_stats_over_time(laboratory.fumehood_data, str(lab_dir) + '/fumehoods-std-mean.pdf')
+  fumehood_data_correlation_plot(laboratory, str(lab_dir) + '/fumehood-data-correlation-plot.pdf')
+  savings = generate_savings(laboratory.summary['hood_adjusted_sum'], laboratory.summary['minimum_evac'])
+  basic_plot_for_savings(savings, str(lab_dir) + '/basic-savings-plot.pdf')
+  cumulative_plot_for_savings(savings, str(lab_dir) + '/basic-cummulative-savings-plot.pdf')
+  laboratory_results.append(laboratory.summary)
+  savings_results.append(savings)
+  results_file.write(','.join(map(str,param)) + ',' + str(laboratory.summary.sum()['minimum_evac']) + ',' + str(laboratory.summary.sum()['hood_adjusted_sum']) + '\n')
+
+  results_file.close()
 
   all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
   all_savings = pd.concat([x for x in savings_results], join='outer', axis = 1)
   all_savings_cummulative = pd.concat([x.cumsum() for x in savings_results], join='outer', axis = 1)
 
-  plot_stats_over_time(all_adjusted_sums, output_directory + laboratory.laboratory_name + '/adjusted_sums_summary.pdf')
+  plot_stats_over_time(all_adjusted_sums, output_dir + laboratory.laboratory_name + '/adjusted_sums_summary.pdf')
 
-  plot_stats_over_time(all_savings, output_directory + laboratory.laboratory_name + '/savings_summary.pdf')  
+  plot_stats_over_time(all_savings, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')  
 
-  plot_stats_over_time(all_savings_cummulative, output_directory + laboratory.laboratory_name + '/savings_summary.pdf')
+  plot_stats_over_time(all_savings_cummulative, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')
+
+def main(argv=None):
+  if argv is None:
+    argv = sys.argv
+  (laboratories, hoodmodels, fumehoods) = setup_data(data_dir, output_dir, debug_dir, statistics_dir)
+  for laboratory in laboratories:
+    evaluate_laboratory(laboratory)
+
+main()
