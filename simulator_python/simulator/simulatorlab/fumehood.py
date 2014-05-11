@@ -118,6 +118,7 @@ def populate_fumehood_occupancy_data(fumehood):
 def adjust_cfm_by_occupancy(fumehood):
   for sample in fumehood.data.index:
     percent_open = fumehood.data.loc[sample]
+    percent_open = percent_open * (1 - fumehood.laboratory.fumehood_reduction_factor)
     occ = fumehood.occupancy_data.loc[sample]
     fumehood.data.loc[sample] = fumehood.finalcfm(percent_open, occ)
 

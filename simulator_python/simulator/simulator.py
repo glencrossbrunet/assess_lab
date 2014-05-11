@@ -33,7 +33,9 @@ parameters = [["Current Operating Settings",4,10,4,10,.3,0]
           ,["Reduced ACH At Night",4,10,3,6,.3,0]
           ,["Reduced All ACH",4,8,3,5,.3,0]
           ,["Current Operation Without Occupation Sensors",4,10,3,6,1,0]
-          ,["Current Operation Without Occupation Sensors",4,10,3,6,.3,.25]
+          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.25]
+          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.50]
+          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.75]
          ]
 
 def fill_values_in_laboratory_struct(laboratory):
