@@ -1,9 +1,18 @@
 from simulatorio.scrapedfile import *
+from optparse import OptionParser
 from simulatorio.load_environment import *
 import os, sys, copy
 from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
 from simulatorlogic import *
+
+parser = OptionParser()
+parser.add_option("-d", "--data-directory", dest="data_dir", help="selects the directory from which to read datasets", default="data/")
+parser.add_option("-o", "--output-directory", dest="output_dir", help="selects the directory to which to write output", default="output/")
+parser.add_option("-b", "--debug-direcotry", dest="debug_dir", help="selects the directory to which to write debugging information", default="debug/")
+parser.add_option("-s", "--statistics-directory", dest="statistics_dir", help="selects the directory to which to write statistics", default="stats/")
+parser.add_option("-p", "--parameters", dest="parameters", help="specifies parameters to test in the format of a list of lists such as [['Current Operating Settings',4,10,4,10,.3,0],['Reduced ACH At Night and 25 percent reduced use',4,10,3,6,.3,.25]], where the values are [description, day unoccupied ach, day occupied ach, night unoccupied ach, night occupied ach, estimated fumehood occupation rate, usage reduction percentage]")
+parser.add_option("-v", "--verbose", dest="verbose", default=True, help="prints status messages to stdout")
 
 data_dir = "E:/git/equipmind/assess_lab/new-dataset/"
 output_dir = "E:/git/equipmind/assess_lab/output/"
@@ -20,10 +29,11 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
 #     result.to_csv(output_dir + str(laboratory) + '-all_fumehoods.csv')
 
 # dat control flow
-params = [["Current Operating Settings",4,10,4,10,.3]
-          ,["Reduced ACH At Night",4,10,3,6,.3]
-          ,["Reduced All ACH",4,8,3,5,.3]
-          ,["Current Operation Without Occupation Sensors",4,10,3,6,1]
+parameters = [["Current Operating Settings",4,10,4,10,.3,0]
+          ,["Reduced ACH At Night",4,10,3,6,.3,0]
+          ,["Reduced All ACH",4,8,3,5,.3,0]
+          ,["Current Operation Without Occupation Sensors",4,10,3,6,1,0]
+          ,["Current Operation Without Occupation Sensors",4,10,3,6,.3,.25]
          ]
 
 def fill_values_in_laboratory_struct(laboratory):
@@ -43,12 +53,12 @@ def evaluate_laboratory(laboratory):
     os.makedirs(lab_top_dir)
   results_file = open(lab_top_dir + "/laboratory-results.csv",'w')
   results_file.write("SIMULATION RESULTS\n")
-  results_file.write("Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Minimum Evac,Excess Fumehood Evac,Savings\n")
-  for param in params:
-    evaluate_laboratory_by_parameter(laboratory, param)
+  results_file.write("Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Use Reduction Factor,Minimum Evac,Excess Fumehood Evac,Savings\n")
+  for param in parameters:
+    results_file.write(evaluate_laboratory_by_parameter(laboratory, param))
 
 def evaluate_laboratory_by_parameter(laboratory, param):
-  laboratory.reset_occupancy_values(param[1], param[2], param[3], param[4], param[5])
+  laboratory.reset_parameters(param[1], param[2], param[3], param[4], param[5], param[6])
   laboratory.reset()
   lab_dir = os.path.dirname(output_dir + str(laboratory) + '/')
   if not os.path.exists(lab_dir):
@@ -64,7 +74,7 @@ def evaluate_laboratory_by_parameter(laboratory, param):
   cumulative_plot_for_savings(savings, str(lab_dir) + '/basic-cummulative-savings-plot.pdf')
   laboratory_results.append(laboratory.summary)
   savings_results.append(savings)
-  results_file.write(','.join(map(str,param)) + ',' + str(laboratory.summary.sum()['minimum_evac']) + ',' + str(laboratory.summary.sum()['hood_adjusted_sum']) + '\n')
+  return (','.join(map(str,param)) + ',' + str(laboratory.summary.sum()['minimum_evac']) + ',' + str(laboratory.summary.sum()['hood_adjusted_sum']) + '\n')
 
   results_file.close()
 
@@ -85,4 +95,5 @@ def main(argv=None):
   for laboratory in laboratories:
     evaluate_laboratory(laboratory)
 
+(options, args) = parser.parse_args()
 main()

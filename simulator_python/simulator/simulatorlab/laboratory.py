@@ -31,6 +31,7 @@ class Laboratory:
     self.day_start = pd.to_datetime(initial_data['day_start'])
     self.night_start = pd.to_datetime(initial_data['night_start'])
     self.occupancy_percent = initial_data['occupancy_percent']
+    self.fumehood_reduction_factor = 0
     self.fumehoods = []
     self.occupancy_data = None
     self.min_evac_series = None
@@ -39,7 +40,7 @@ class Laboratory:
     self.summary = None
     self.fumehood_data = None
 
-  def reset_occupancy_values(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_occupancy_percent):
+  def reset_parameters(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_occupancy_percent, new_fumehood_reduction_factor):
     self.occupancy_percent = new_occupancy_percent
     self.ach_unoccupied_day = new_ach_unoccupied_day
     self.ach_occupied_day = new_ach_occupied_day
@@ -52,6 +53,7 @@ class Laboratory:
     min_evac_unoccupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_night, self.additional_evac)
     self.min_evac_unoccupied_night = min_evac_unoccupied_night
     min_evac_occupied_night = generate_min_evac_cfm(self.height, self.surface_area, self.ach_occupied_night, self.additional_evac)
+    self.fumehood_reduction_factor = new_fumehood_reduction_factor
 
   def reset(self):
     self.occupancy_data = None
