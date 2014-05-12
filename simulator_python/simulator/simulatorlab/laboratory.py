@@ -63,6 +63,7 @@ class Laboratory:
       fumehood.reset()
 
   def __str__(self):
+    print self.laboratory_name
     return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.occupancy_percent, self.fumehood_reduction_factor])))
 
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):

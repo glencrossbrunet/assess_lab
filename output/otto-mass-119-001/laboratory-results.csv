@@ -1,0 +1,9 @@
+SIMULATION RESULTS
+Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Use Reduction Factor,Minimum Evac,Excess Fumehood Evac,Savings
+Current Operating Settings,4,10,4,10,0.3,0,4095674.0,4095674.0
+Reduced ACH At Night,4,10,3,6,0.3,0,3591169.0,3591211.53123
+Reduced All ACH,4,8,3,5,0.3,0,3252098.0,3252140.53123
+Current Operation Without Occupation Sensors,4,10,3,6,1,0,3581339.0,3581452.84368
+Current Operation Without Occupation Sensors And Reduced,4,8,3,6,0.3,0.25,3261929.0,3261929.0
+Current Operation Without Occupation Sensors And Reduced,4,8,3,6,0.3,0.5,3232436.0,3232436.0
+Current Operation Without Occupation Sensors And Reduced,4,8,3,6,0.3,0.75,3255375.0,3255375.0
