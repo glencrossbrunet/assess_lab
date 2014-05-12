@@ -5,6 +5,13 @@ from simulatorio.estimators import *
 
 verbose = True
 
+def preprocess_datastrea_text(datastream_raw, datastream):
+  out = open(datastream,'w')
+  with open(datastream_raw) as f:
+    for line in f:
+      line = [x.replace('l/s','').replace('%','').strip() for x in line.split(',')]
+      out.write(','.join(map(str,line)) + '\n')
+
 def load_laboratories(file):
   if(verbose):
     print("Loading laboratories")
@@ -99,6 +106,7 @@ def load_environment(data_directory, debug_directory):
   return (laboratories, hoodmodels, fumehoods)
 
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
+  preprocess_datastrea_text(data_directory + 'datastream_raw.txt', data_directory + 'datastream.txt')
   df = load_hoods_datastream(data_directory + 'datastream.txt', fumehoods)
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
   

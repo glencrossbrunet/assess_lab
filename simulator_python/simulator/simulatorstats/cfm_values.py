@@ -54,6 +54,7 @@ def summary_description_plot(df, fig_title):
   plt.close('all')
 
 def plot_stats_over_time(df, fig_title):
+  print "Plotting statistics over time."
   df.transpose().describe().transpose().drop(['25%','50%','75%','count','std'], axis=1).plot()
   plt.legend(loc='best')
   plt.tight_layout()
