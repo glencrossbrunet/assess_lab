@@ -1,16 +1,17 @@
-import os, sys
+import os, sys, fileinput
 from simulatorlab.laboratory import *
 from simulatorlab.fumehood import *
 from simulatorio.estimators import *
 
 verbose = True
 
-def preprocess_datastrea_text(datastream_raw, datastream):
-  out = open(datastream,'w')
-  with open(datastream_raw) as f:
-    for line in f:
-      line = [x.replace('l/s','').replace('%','').strip() for x in line.split(',')]
-      out.write(','.join(map(str,line)) + '\n')
+def preprocess_datastrea_text(datastream):
+    """WARNING - Overwrites file passed"""
+    err = 'Failed to connect to server'
+    for line in fileinput.input(datastream, inplace=True):
+        row = line.split(', ')
+        temp = [x.split('\xc2\xa0')[0].replace('l/s','').replace('%','').strip() for x in row]
+        print ','.join([x.replace(err,'NA') for x in temp])
 
 def load_laboratories(file):
   if(verbose):
@@ -51,9 +52,9 @@ def load_hoods_datastream(file, fumehoods):
 
   df = pd.read_csv(file, skiprows = 1, index_col=0, parse_dates=True, date_parser = lambda x : pd.to_datetime(x * 1e9), header=None, squeeze = True,  names=["fumehood", "flow", "open"])
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
-
-  bac_to_fumehood_series = df.fumehood.apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+  bac_to_fumehood_series = df.fumehood.apply(lambda x : get_fumehood_for_bac(int(float(x)), fumehoods))
   df["fumehood"] = bac_to_fumehood_series
+  df[['flow', 'open']] = df[['flow', 'open']].astype(float)
   return df
 
 def preprocess_datastream(df, statistics_directory, fumehoods_with_labs):
@@ -106,9 +107,13 @@ def load_environment(data_directory, debug_directory):
   return (laboratories, hoodmodels, fumehoods)
 
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
-  preprocess_datastrea_text(data_directory + 'datastream_raw.txt', data_directory + 'datastream.txt')
-  df = load_hoods_datastream(data_directory + 'datastream.txt', fumehoods)
+  preprocess_datastrea_text(data_directory + 'datastream_raw.txt')
+  df = load_hoods_datastream(data_directory + 'datastream_raw.txt', fumehoods)
+  print df
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
+
+  for fumehood in fumehoods:
+    print fumehood.unadjusted_data
   
   with_hoodmodel = []
   for fumehood in fumehoods:
