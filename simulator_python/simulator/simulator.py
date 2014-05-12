@@ -29,7 +29,7 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
         if not laboratory in laboratories_with_valid_fumehoods:
           laboratories_with_valid_fumehoods.append(laboratory)
   laboratories = laboratories_with_valid_fumehoods
-  debug_f = open(debug_directory + 'environment.txt','w')
+  debug_f = open(debug_dir + 'environment.txt','w')
   debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')
   debug_f.write('Hoodmodels :\n'                  + str(' | '.join(map(str, hoodmodels))) + '\n\n')
   debug_f.write('Fumehoods with Laboratories :\n' + str(' | '.join(map(str, fumehoods))) + '\n\n')
@@ -43,13 +43,12 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
 # dat control flow
 parameters = [["Current Operating Settings",4,10,4,10,.3,0]
           ,["Reduced ACH At Night",4,10,3,6,.3,0]
-          ,["Reduced All ACH",4,8,3,5,.3,0]
-          ,["Current Operation Without Occupation Sensors",4,10,3,6,1,0]
-          ,["Usage Reduction Test",4,8,3,6,.4,0]
-          ,["Usage Reduction Test",4,8,3,6,.4,.25]
-          ,["Usage Reduction Test",4,8,3,6,.4,.30]
-          ,["Usage Reduction Test",4,8,3,6,.4,.50]
-          ,["Usage Reduction Test",4,8,3,6,.4,.75]
+          ,["Reduced All ACH",4,8,4,8,.3,0]
+          ,["Usage Reduction Test",4,10,4,10,.4,0]
+          ,["Usage Reduction Test",4,10,4,10,.4,.25]
+          ,["Usage Reduction Test",4,10,4,10,.4,.30]
+          ,["Usage Reduction Test",4,10,4,10,.4,.50]
+          ,["Usage Reduction WIth ACH Reduction",4,8,3,6,.4,.25]
          ]
 
 def fill_values_in_laboratory_struct(laboratory):

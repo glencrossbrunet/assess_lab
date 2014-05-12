@@ -83,12 +83,12 @@ def load_environment(data_directory, debug_directory):
 
   fumehoods = fumehoods_with_labs
 
-  fumehoods_with_model = []
+  fumehoods_with_single_model = []
   for fumehood in fumehoods:
-    if not fumehood.hood_model is None:
-      fumehoods_with_model.append(fumehood)
+    if not isinstance(fumehood.hood_model, list) and not fumehood.hood_model is None:
+      fumehoods_with_single_model.append(fumehood)
 
-  fumehoods = fumehoods_with_model
+  fumehoods = fumehoods_with_single_model
 
   for fumehood in fumehoods:
     if fumehood.bac == -1:
@@ -99,7 +99,7 @@ def load_environment(data_directory, debug_directory):
   return (laboratories, hoodmodels, fumehoods)
 
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
-  df = load_hoods_datastream(data_directory + 'datastream-test.txt', fumehoods)
+  df = load_hoods_datastream(data_directory + 'datastream.txt', fumehoods)
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
   
   with_hoodmodel = []
