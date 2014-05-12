@@ -115,7 +115,6 @@ def load_datastream(data_directory, debug_directory, statistics_directory, fumeh
   for fumehood in fumehoods:
     if verbose:
       print "Loading data for Fumehood " + str(fumehood)
-
     fumehood.unadjusted_data = resample_data_to_half_hourly(fumehood.unadjusted_data)
 
   # grouped = preprocess_datastream(df, statistics_directory, fumehoods)

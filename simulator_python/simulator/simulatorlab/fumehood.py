@@ -111,6 +111,7 @@ def generate_sample_data_for_random_fumehoods_by_random_sample(fumehoods, sample
       fumehood.unadjusted_data = pd.concat([hood.unadjusted_sum for hood in random.sample(set([fumehoods_with_unadjusted]), samples)])
 
 def populate_fumehood_occupancy_data(fumehood):
+  print "Populating fumehood occupancy data"
   index = fumehood.data.index
   result = []
   for each in index:

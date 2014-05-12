@@ -22,6 +22,14 @@ statistics_dir = "E:/git/equipmind/assess_lab/stats/"
 def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
   (laboratories, hoodmodels, fumehoods) = load_environment(data_dir, debug_dir)
   load_datastream(data_dir, debug_dir, statistics_dir, fumehoods)
+  laboratories_with_valid_fumehoods = []
+  for laboratory in laboratories:
+    for fumehood in laboratory.fumehoods:
+      if fumehood in fumehoods:
+        if not laboratory in laboratories_with_valid_fumehoods:
+          laboratories_with_valid_fumehoods.append(laboratory)
+  laboratories = laboratories_with_valid_fumehoods
+  
   return (laboratories, hoodmodels, fumehoods)
 
 # for laboratory in laboratories:
@@ -33,10 +41,11 @@ parameters = [["Current Operating Settings",4,10,4,10,.3,0]
           ,["Reduced ACH At Night",4,10,3,6,.3,0]
           ,["Reduced All ACH",4,8,3,5,.3,0]
           ,["Current Operation Without Occupation Sensors",4,10,3,6,1,0]
-          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.25]
-          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.30]
-          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.50]
-          ,["Current Operation Without Occupation Sensors And Reduced",4,8,3,6,.3,.75]
+          ,["Usage Reduction Test",4,8,3,6,.4,0]
+          ,["Usage Reduction Test",4,8,3,6,.4,.25]
+          ,["Usage Reduction Test",4,8,3,6,.4,.30]
+          ,["Usage Reduction Test",4,8,3,6,.4,.50]
+          ,["Usage Reduction Test",4,8,3,6,.4,.75]
          ]
 
 def fill_values_in_laboratory_struct(laboratory):
