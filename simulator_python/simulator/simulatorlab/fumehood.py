@@ -30,7 +30,7 @@ class Fumehood:
       self.laboratory.fumehoods.append(self)
     if "OR" in initial_data['hood_model']:
       self.hood_model = []
-      for each in initial_data['hood_model']:
+      for each in initial_data['hood_model'].split('OR'):
         self.hood_model.append(get_hoodmodel_for_id(each, hoodmodels))
     else:
       self.hood_model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
@@ -70,6 +70,7 @@ class Fumehood:
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm(sash_height, occupied)])])
 
+
 def get_fumehood_for_bac(bac, fumehoods):
   for fumehood in fumehoods:
     if fumehood.bac == bac:
@@ -85,6 +86,9 @@ def get_hoodmodel_for_id(id, hoodmodels):
 def add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods):
   df = df.groupby('fumehood')
   for k, v in df:
+    if isinstance(k.hood_model, list):
+      k.hood_model = get_correct_hoodmodel_from_list(v.copy(), k.hood_model)
+      print k.hood_model
     v = v.drop('fumehood', 1)
     v = v.drop('flow', 1)
     v.columns = [k]
@@ -133,3 +137,36 @@ def get_random_working_bac(fumehoods, bac):
     return get_random_working_bac(fumehoods, fumehoods[random.randint(0,len(fumehoods) -1)].bac)
   else:
     return bac
+
+def get_correct_hoodmodel_from_list(df, hoodmodels):
+  result = hoodmodels[0]
+  total_flow = df['flow'].sum(axis=1)
+  print total_flow
+  error = 99999999999
+  sash_height_series = df['open']
+  for hoodmodel in hoodmodels:
+    if hoodmodel is None:
+      continue
+    cfmsum = np.nansum(np.array([(generate_cfm(sash_height_series.loc[sample], True, hoodmodel)) for sample in df.index]))
+    print cfmsum
+    if abs(cfmsum - total_flow) < error:
+      error = abs(cfmsum - total_flow)
+      result = hoodmodel
+  return result
+
+
+def facevelocity(occupied, hood_model):
+  if occupied:
+    return hood_model.face_vel_occupied
+  else:
+    return hood_model.face_vel_unoccupied
+
+def faceintakecfm(sash_height, occupied, hood_model):
+    return facevelocity(occupied, hood_model) * sash_height * hood_model.sash_width / 144
+
+def generate_cfm(sash_height, occupied, hood_model):
+    sash_height = sash_height * hood_model.max_sash_height * 0.01
+    face_intake = faceintakecfm(sash_height, occupied, hood_model)
+    return np.min([hood_model.max_cfm, 
+                   np.max([hood_model.min_cfm, face_intake])])
+

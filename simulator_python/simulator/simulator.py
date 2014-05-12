@@ -29,7 +29,11 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
         if not laboratory in laboratories_with_valid_fumehoods:
           laboratories_with_valid_fumehoods.append(laboratory)
   laboratories = laboratories_with_valid_fumehoods
-  
+  debug_f = open(debug_directory + 'environment.txt','w')
+  debug_f.write('Laboratories :\n'                + str(' | '.join(map(str, laboratories))) + '\n\n')
+  debug_f.write('Hoodmodels :\n'                  + str(' | '.join(map(str, hoodmodels))) + '\n\n')
+  debug_f.write('Fumehoods with Laboratories :\n' + str(' | '.join(map(str, fumehoods))) + '\n\n')
+  debug_f.close()
   return (laboratories, hoodmodels, fumehoods)
 
 # for laboratory in laboratories:
