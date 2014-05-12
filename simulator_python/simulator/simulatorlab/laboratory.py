@@ -5,13 +5,11 @@ class Laboratory:
 
   def __init__(self, initial_data):
     self.laboratory_name = initial_data['laboratory_name']
-    self.building_name = initial_data['building_name']
     self.additional_evac = initial_data['additional_evac']
-    self.building_num = initial_data['building_num']
-    self.room = initial_data['room']
-    self.department = initial_data['department']
-    self.principle_investigator = initial_data['principle_investigator']
-    self.other_contact = initial_data['other_contact']
+#    self.room = initial_data['room']
+#    self.department = initial_data['department']
+#    self.principle_investigator = initial_data['principle_investigator']
+#    self.other_contact = initial_data['other_contact']
     self.height = initial_data['height']
     self.surface_area = initial_data['surface_area']
     self.ach_unoccupied_day = initial_data['ach_unoccupied_day']
@@ -30,7 +28,7 @@ class Laboratory:
     self.min_evac_occupied_night = min_evac_occupied_night
     self.day_start = pd.to_datetime(initial_data['day_start'])
     self.night_start = pd.to_datetime(initial_data['night_start'])
-    self.occupancy_percent = initial_data['occupancy_percent']
+    self.occupancy_percent = initial_data['fumehood_occupancy_percent']
     self.fumehood_reduction_factor = 0
     self.fumehoods = []
     self.occupancy_data = None
