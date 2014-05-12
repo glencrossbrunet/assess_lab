@@ -78,17 +78,12 @@ def evaluate_laboratory_by_parameter(laboratory, param):
   laboratory_results.append(laboratory.summary)
   savings_results.append(savings)
   return (','.join(map(str,param)) + ',' + str(laboratory.summary.sum()['minimum_evac']) + ',' + str(laboratory.summary.sum()['hood_adjusted_sum']) + '\n')
-
   results_file.close()
-
   all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
   all_savings = pd.concat([x for x in savings_results], join='outer', axis = 1)
   all_savings_cummulative = pd.concat([x.cumsum() for x in savings_results], join='outer', axis = 1)
-
   plot_stats_over_time(all_adjusted_sums, output_dir + laboratory.laboratory_name + '/adjusted_sums_summary.pdf')
-
   plot_stats_over_time(all_savings, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')  
-
   plot_stats_over_time(all_savings_cummulative, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')
 
 def main(argv=None):

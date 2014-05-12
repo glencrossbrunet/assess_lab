@@ -19,6 +19,7 @@ def bootstrap_for_lab(laboratory, fig_title):
  # ax3.sup_title('fumehoods_adjusted_sum')
   fig.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def basic_plot_for_lab(laboratory, fig_title):
   laboratory.summary.plot()
@@ -26,6 +27,7 @@ def basic_plot_for_lab(laboratory, fig_title):
   plt.suptitle('laboratory summary')
   plt.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def basic_plot_for_savings(savings, fig_title):
   savings.plot()
@@ -33,6 +35,7 @@ def basic_plot_for_savings(savings, fig_title):
   plt.suptitle('laboratory summary')
   plt.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def cumulative_plot_for_savings(savings, fig_title):
   savings.cumsum().plot()
@@ -40,6 +43,7 @@ def cumulative_plot_for_savings(savings, fig_title):
   plt.suptitle('laboratory summary')
   plt.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def summary_description_plot(df, fig_title):
   fig = plt.figure()
@@ -47,13 +51,16 @@ def summary_description_plot(df, fig_title):
   plt.legend(loc='best')
   plt.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def plot_stats_over_time(df, fig_title):
   df.transpose().describe().transpose().drop(['25%','50%','75%','count','std'], axis=1).plot()
   plt.legend(loc='best')
   plt.tight_layout()
   plt.savefig(fig_title)
+  plt.close('all')
 
 def fumehood_data_correlation_plot(laboratory, fig_title):
   sns.corrplot(laboratory.fumehood_data, annot=False, diag_names=False)
   plt.savefig(fig_title)
+  plt.close('all')

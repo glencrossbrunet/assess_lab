@@ -83,6 +83,13 @@ def load_environment(data_directory, debug_directory):
 
   fumehoods = fumehoods_with_labs
 
+  fumehoods_with_single_model = []
+  for fumehood in fumehoods:
+    if not isinstance(fumehood.hood_model, list) and not fumehood.hood_model is None:
+      fumehoods_with_single_model.append(fumehood)
+
+  fumehoods = fumehoods_with_single_model
+
   for fumehood in fumehoods:
     if fumehood.bac == -1:
       fumehood.bac = get_random_working_bac(fumehoods, -1)
@@ -100,8 +107,15 @@ def load_environment(data_directory, debug_directory):
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
   df = load_hoods_datastream(data_directory + 'datastream-test.txt', fumehoods)
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
+  for fumehood in fumehoods:
+    if fumehood.unadjusted_data is None:
+      print "Loading random data for missing data for Fumehood " + str(fumehood)
+      fumehood.bac = get_random_working_bac(fumehoods, -1)
   link_missing_sample_data_for_random_fumehoods(fumehoods)
   for fumehood in fumehoods:
+    if verbose:
+      print "Loading data for Fumehood " + str(fumehood)
+
     fumehood.unadjusted_data = resample_data_to_half_hourly(fumehood.unadjusted_data)
 
   # grouped = preprocess_datastream(df, statistics_directory, fumehoods)

@@ -28,7 +28,12 @@ class Fumehood:
     self.laboratory = get_laboratory_for_id(initial_data['laboratory'], laboratories)
     if(self.laboratory is not None):
       self.laboratory.fumehoods.append(self)
-    self.hood_model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
+    if "OR" in initial_data['hood_model']:
+      self.hood_model = []
+      for each in initial_data['hood_model']:
+        self.hood_model.append(get_hoodmodel_for_id(each, hoodmodels))
+    else:
+      self.hood_model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
     self.install_time = initial_data['install_time']
     self.follow_up_date = initial_data['follow_up_date']
     self.mac_address = initial_data['mac_address']
