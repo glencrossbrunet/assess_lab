@@ -1,3 +1,12 @@
-model,max_sash_height,sash_width,face_vel_occupied,face_vel_unoccupied,min_cfm,max_cfm
-mcgill-standard,28,50,100,60,200,650
-otto-1,25,36,100,60,200,800
+sash_width,depth,max_sash_height,max_cfm,min_cfm,face_vel_occupied,face_vel_unoccupied,model,,,
+36,na,25,800,200,100,60,otto-36,,,
+32.5,na,24,800,200,100,60,otto-32.5,,,
+38,na,30.25,800,200,100,60,otto-38,,,
+50,na,30,800,200,100,60,otto-50,,,
+84,na,30,1600,400,100,60,otto-84,,,
+38,na,39,800,200,100,60,otto-38-b,,,
+38.5,na,28.75,800,200,100,60,otto-38.5,,,
+62,na,28,1200,300,100,60,otto-62,,,
+38,na,30,800,200,100,60,otto-38-c,,,
+38,na,28,800,200,100,60,otto-38-d,,,
+60,na,62,1200,300,100,60,otto-60,,,
