@@ -1,3 +1,26 @@
-laboratory_name,building_name,building_num,room,department,principle_investigator,other_contact,height,surface_area,ach_unoccupied_day,ach_occupied_day,ach_unoccupied_night,ach_occupied_night,additional_evac,total_hoods,day_start,night_start,occupancy_percent,cost_cfm
-otto-mass-119-230,Otto Maass,119,230,chemistry,jane doe,john smith,10,2265,4,10,2,6,1192,17,08:00,23:00,0.3,5.25
-otto-mass-119-001,Otto Maass,119,1,chemistry,jane doe,john smith,10,4915,4,10,4,10,560,15,10:00,15:30,0.3,5.25
+laboratory_name,surface_area,height,ach_occupied_day,ach_unoccupied_day,ach_occupied_night,ach_unoccupied_night,,,additional_evac,total_hoods,total_hoods,cost_cfm,day_start,night_start,day_start_weekend,night_start_weekend,avg_sash_height,fumehood_usage_level,fumehood_occupancy_percent
+OM-1,4915,10,10,4,10,4,na,na,-560,15,0,5.25,10:00,16:00,10:00,16:00,0.5,medium,0.4
+OM-100,4650,10,10,4,10,4,na,na,-560,15,0,5.25,10:00,16:00,10:00,16:00,1.5,medium,0.4
+OM-120,3100,10,10,4,10,4,na,na,-830,12,0,5.25,10:00,16:00,10:00,16:00,2.5,medium,0.4
+OM-200,1423,10,10,4,10,4,na,na,-150,6,1,5.25,10:00,16:00,10:00,16:00,3.5,medium,0.4
+OM-230,2719,10,10,4,10,4,na,na,-1342,19,0,5.25,10:00,16:00,10:00,16:00,4.5,medium,0.4
+OM-240,3143,10,10,4,10,4,na,na,-1576,14,2,5.25,10:00,16:00,10:00,16:00,5.5,medium,0.4
+OM-301,3152,10,10,4,10,4,na,na,-1171,7,8,5.25,08:00,07:00,10:00,02:00,50,heavy,0.75
+OM-330,1700,10,10,4,10,4,na,na,-1198,12,0,5.25,10:00,04:00,na,na,50,light,0.25
+OM-430,2333,10,10,4,10,4,na,na,-1470,14,0,5.25,10:00,15:30,na,na,50,medium,0.5
+OM-440,3400,10,10,4,10,4,na,na,-1230,8,8,5.25,08:00,07:00,10:00,02:00,50,heavy,0.75
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
