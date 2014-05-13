@@ -37,7 +37,6 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
   return (laboratories, hoodmodels, fumehoods)
 
 def generate_plots_for_parameterised_lab(laboratory, savings, lab_dir):
-  laboratory.summary.to_csv(str(lab_dir) + '/laboratory-summary.csv')
   basic_plot_for_lab(laboratory, str(lab_dir) + '/lab-line-basic.pdf')
   plot_stats_over_time(laboratory.fumehood_data, str(lab_dir) + '/fumehoods-std-mean.pdf')
   fumehood_data_correlation_plot(laboratory, str(lab_dir) + '/fumehood-data-correlation-plot.pdf')
@@ -77,9 +76,11 @@ def evaluate_laboratory(laboratory):
     os.makedirs(lab_top_dir)
   results_file = open(lab_top_dir + "laboratory-results.csv",'w')
   results_file.write("SIMULATION RESULTS\n")
-  results_file.write("simulation_description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Usage Reduction Factor,start_date, end_date, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, total_excess_fumehood_evacuation, total_sash_dependent_evac_per_hour, total_excess_spending\n")
+  results_file.write("simulation_description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Usage Reduction Factor,start_date, end_date, total_hours_in_range, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, yearly_fumehood_added_expense, yearly_sash_dependent_added_expense\n")
   for param in parameters:
     results_file.write(evaluate_laboratory_by_parameter(laboratory, param, lab_top_dir))
+
+  results_file.close()
 
 
 def evaluate_laboratory_by_parameter(laboratory, param, lab_top_dir):
@@ -91,33 +92,40 @@ def evaluate_laboratory_by_parameter(laboratory, param, lab_top_dir):
   print "Processing " + str(laboratory)
 
   fill_values_in_laboratory_struct(laboratory)
+  
+  laboratory.summary.to_csv(str(lab_dir) + '/laboratory-summary.csv')
+
+  start_date = laboratory.summary.index[0]
+  end_date = laboratory.summary.index[-1]
+  total_hours_in_range = -((end_date.year - start_date.year) * 8766 + (end_date.day - start_date.day) * 24 + (end_date.hour - start_date.hour))
+  total_hours_analysed = len(laboratory.summary.index)
+  min_lab_evac_per_hour = laboratory.min_evac_series.sum() / total_hours_analysed
+  hood_total_evac_per_hour = laboratory.fumehoods_adjusted_sum.sum() / total_hours_analysed
+  base_hood_evac_per_hour = get_base_fumehood_evac_for_lab(laboratory) / total_hours_analysed
+  sash_dependent_evac_per_hour = (hood_total_evac_per_hour - base_hood_evac_per_hour)
+  yearly_fumehood_added_expense = hood_total_evac_per_hour * 5.25
+  yearly_sash_dependent_added_expense = hood_total_evac_per_hour * 5.25
+
+  return (','.join(map(str,param)) + ',' + ','.join(map(str, [start_date, end_date, total_hours_in_range, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, yearly_fumehood_added_expense, yearly_sash_dependent_added_expense])) + '\n')
+
   excess = calculate_excess_evacuation(laboratory.summary['hood_adjusted_sum'], laboratory.summary['minimum_evac'])
   
   #generate_plots_for_parameterised_lab(laboratory, excess, lab_dir)
   
   laboratory_results.append(laboratory.summary)
+
   excess_evacuation.append(excess)
   all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
   all_excess_hood_evac = pd.concat([x for x in excess_evacuation], join='outer', axis = 1)
   all_excess_hood_evac_cummulative = pd.concat([x.cumsum() for x in excess_evacuation], join='outer', axis = 1)
 
-  start_date = laboratory.summary.index[0]
-  end_date = laboratory.summary.index[-1]
-  total_hours_analysed = (end_date - start_date).astype('timedelta64[h]')
-  min_lab_evac_per_hour = laboratory.summary.sum()['minimum_evac'] / total_hours_analysed
-  hood_total_evac_per_hour = laboratory.summary.sum()['hood_adjusted_sum'] / total_hours_analysed
-  base_hood_evac_per_hour = get_base_fumehood_evac_for_lab(laboratory) / total_hours_analysed
-  sash_dependent_evac_per_hour = (hood_total_evac_per_hour - base_hood_evac_per_hour)
-  total_excess_fumehood_evacuation = all_excess_hood_evac_cummulative / total_hours_analysed
-  total_sash_dependent_evac_per_hour = sash_dependent_evac_per_hour * 5.35
-  total_excess_spending = total_excess_fumehood_evacuation * 5.25
+
+  all_adjusted_sums.describe().to_csv(str(lab_dir) + "/all_adjusted_sums-description.csv")
 
   plot_stats_over_time(all_adjusted_sums, lab_top_dir + 'adjusted_sums_summary.pdf')
   plot_stats_over_time(all_excess_hood_evac, lab_top_dir + 'savings_summary.pdf')  
   plot_stats_over_time(all_excess_hood_evac_cummulative, lab_top_dir + 'savings_summary.pdf')
 
-  return (','.join(map(str,param)) + ',' + ','.join(map(str, [start_date, end_date, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, total_excess_fumehood_evacuation, total_sash_dependent_evac_per_hour, total_excess_spending])) + '\n')
-  results_file.close()
 
 def main(argv=None):
   if argv is None:

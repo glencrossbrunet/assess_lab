@@ -3,6 +3,7 @@ import numpy as np
 
 class Laboratory:
 
+
   def __init__(self, initial_data):
     self.laboratory_name = initial_data['laboratory_name']
     self.additional_evac = initial_data['additional_evac']
@@ -38,6 +39,7 @@ class Laboratory:
     self.summary = None
     self.fumehood_data = None
 
+
   def reset_parameters(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_occupancy_percent, new_fumehood_reduction_factor):
     self.occupancy_percent = new_occupancy_percent
     self.ach_unoccupied_day = new_ach_unoccupied_day
@@ -66,9 +68,11 @@ class Laboratory:
     print self.laboratory_name
     return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.occupancy_percent, self.fumehood_reduction_factor])))
 
+
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
   result = (height * surface_area * ach)/60 - additional_evac
   return result
+
 
 def get_min_evac_cfm_for_time(time, occupied, laboratory):
   if time.hour >= laboratory.day_start.hour and time.hour <= laboratory.night_start.hour:
@@ -90,9 +94,11 @@ def get_laboratory_for_id(id, laboratories):
       return laboratory
   return None
 
+
 def get_all_fumehood_data_for_lab(laboratory):
   laboratory.fumehood_data = pd.concat([fumehood.data for fumehood in laboratory.fumehoods], join='outer', axis = 1)
   return laboratory.fumehood_data
+
 
 def generate_laboratory_summary(laboratory):
   df = pd.concat([laboratory.min_evac_series, laboratory.fumehoods_unadjusted_sum, laboratory.fumehoods_adjusted_sum], join='outer', axis = 1)

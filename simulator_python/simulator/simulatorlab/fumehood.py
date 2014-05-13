@@ -5,6 +5,7 @@ from simulatorlab.laboratory import *
 
 class HoodModel:
 
+
   def __init__(self, initial_data):
     self.model = initial_data['model']
     self.max_sash_height = initial_data['max_sash_height']
@@ -47,14 +48,17 @@ class Fumehood:
     self.unadjusted_data = None
     self.occupancy_data = None
 
+
   def __str__(self):
     if self.hood_model.model is None or self.laboratory is None:
       return self.hood_id + "__incomplete-metadata"
     return self.hood_id + '__' + self.hood_model.model + '__' + self.laboratory.laboratory_name
 
+
   def reset(self):
     if(self.unadjusted_data is not None):
       self.data = self.unadjusted_data.copy()
+
 
   def facevelocity(self, occupied):
     if occupied:
@@ -62,18 +66,21 @@ class Fumehood:
     else:
       return self.hood_model.face_vel_unoccupied
 
+
   def faceintakecfm(self, sash_height, occupied):
     return self.facevelocity(occupied) * sash_height * self.hood_model.sash_width / 144
+
 
   def finalcfm(self, sash_height, occupied):
     sash_height = sash_height * self.hood_model.max_sash_height * 0.01
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm(sash_height, occupied)])])
 
+
 def calculate_hood_base_evac(fumehood):
   result = []
   for sample in fumehood.occupancy_data.index:
-    result.append(0, fumehood.occupancy_data.loc[sample], fumehood.hoodmodel)
+    result.append(generate_cfm(0, fumehood.occupancy_data.loc[sample], fumehood.hood_model))
   return pd.Series(result)
     
 
@@ -105,12 +112,14 @@ def add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods):
 def test_flow_vs_open(fumehood):
   pass
 
+
 def link_missing_sample_data_for_random_fumehoods(fumehoods):
   for fumehood in fumehoods:
     if fumehood.unadjusted_data is None:
       for fumehood_prime in fumehoods:
         if fumehood_prime.unadjusted_data is not None and fumehood_prime.bac == fumehood.bac:
           fumehood.unadjusted_data = fumehood_prime.unadjusted_data
+
 
 def generate_sample_data_for_random_fumehoods_by_random_sample(fumehoods, samples):
   fumehoods_with_unadjusted = []
@@ -122,6 +131,7 @@ def generate_sample_data_for_random_fumehoods_by_random_sample(fumehoods, sample
     if fumehood.unadjusted_data is None:
       fumehood.unadjusted_data = pd.concat([hood.unadjusted_sum for hood in random.sample(set([fumehoods_with_unadjusted]), samples)])
 
+
 def populate_fumehood_occupancy_data(fumehood):
   index = fumehood.data.index
   result = []
@@ -132,6 +142,7 @@ def populate_fumehood_occupancy_data(fumehood):
       result.append(False)
   fumehood.occupancy_data = pd.Series(result, index=index)
 
+
 def adjust_cfm_by_occupancy(fumehood):
   for sample in fumehood.data.index:
     percent_open = fumehood.data.loc[sample]
@@ -139,11 +150,13 @@ def adjust_cfm_by_occupancy(fumehood):
     occ = fumehood.occupancy_data.loc[sample]
     fumehood.data.loc[sample] = fumehood.finalcfm(percent_open, occ)
 
+
 def get_random_working_bac(fumehoods, bac):
   if bac == -1:
     return get_random_working_bac(fumehoods, fumehoods[random.randint(0,len(fumehoods) -1)].bac)
   else:
     return bac
+
 
 def get_correct_hoodmodel_from_list(df, hoodmodels):
   result = hoodmodels[0]
@@ -161,14 +174,17 @@ def get_correct_hoodmodel_from_list(df, hoodmodels):
       result = hoodmodel
   return result
 
+
 def facevelocity(occupied, hood_model):
   if occupied:
     return hood_model.face_vel_occupied
   else:
     return hood_model.face_vel_unoccupied
 
+
 def faceintakecfm(sash_height, occupied, hood_model):
     return facevelocity(occupied, hood_model) * sash_height * hood_model.sash_width / 144
+
 
 def generate_cfm(sash_height, occupied, hood_model):
     sash_height = sash_height * hood_model.max_sash_height * 0.01

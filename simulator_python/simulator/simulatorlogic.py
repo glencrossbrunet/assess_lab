@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 from simulatorstats.cfm_values import *
 from simulatorlab.fumehood import *
 
+
 def get_base_fumehood_evac_for_lab(laboratory):
   result = 0
   for fumehood in laboratory.fumehoods:
     result += calculate_hood_base_evac(fumehood).sum()
   return result
+
 
 def generate_fumehood_cfms_for_laboratory(laboratory):
   for fumehood in laboratory.fumehoods:
@@ -20,6 +22,7 @@ def generate_fumehood_cfms_for_laboratory(laboratory):
       df['occupancy'] = fumehood.occupancy_data
   result = get_all_fumehood_data_for_lab(laboratory)
   return result
+
 
 def populate_laboratory_occupancy_data(laboratory):
   index = pd.Series()
@@ -34,6 +37,7 @@ def populate_laboratory_occupancy_data(laboratory):
       result.append(False)
   laboratory.occupancy_data = pd.Series(result, index=index)
 
+
 def generate_min_evac_series(laboratory):
   index = laboratory.occupancy_data.index
   result = []
@@ -41,8 +45,10 @@ def generate_min_evac_series(laboratory):
     result.append(get_min_evac_cfm_for_time(sample, laboratory.occupancy_data.loc[sample], laboratory))
   laboratory.min_evac_series = pd.Series(result, index=index)
 
+
 def generate_fumehoods_unadjusted_sum(laboratory):
   laboratory.fumehoods_unadjusted_sum = get_all_fumehood_data_for_lab(laboratory).copy().sum(axis=1)
+
 
 def generate_fumehoods_adjusted_sum(laboratory):
   index = laboratory.occupancy_data.index
@@ -51,10 +57,12 @@ def generate_fumehoods_adjusted_sum(laboratory):
     result.append(np.max([laboratory.fumehoods_unadjusted_sum.loc[sample], laboratory.min_evac_series.loc[sample]]))
   laboratory.fumehoods_adjusted_sum = pd.Series(result, index=index)
 
+
 def calculate_excess_evacuation(hood_adjusted_sum, min_evac):
   df = pd.DataFrame(hood_adjusted_sum - min_evac)
   df.columns = ['cfm_savings']
   return df
+
 
 def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
   if cfm < laboratory.min_unoccupied_cfm:
@@ -62,6 +70,7 @@ def adjust_cfm_for_laboratory_parameters(cfm, laboratory):
   if cfm > laboratory.min_occupied_cfm:
     return laboratory.min_occupied_cfm
   return cfm
+
 
 def simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory):
   
@@ -79,6 +88,7 @@ def simulate_per_fumehood(fumehood_flowdata, fumehoods, output_directory):
 
   results = pd.concat(results_series, join='outer', axis = 1)
   return results
+
 
 def simulate_per_lab(fumehood_flowdata, laboratories, output_directory):
   results_by_lab = fumehood_flowdata.groupby(lambda x : x.laboratory, 1)
