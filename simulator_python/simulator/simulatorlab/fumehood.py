@@ -70,7 +70,6 @@ class Fumehood:
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm(sash_height, occupied)])])
 
-
 def get_fumehood_for_bac(bac, fumehoods):
   for fumehood in fumehoods:
     if fumehood.bac == bac:
@@ -152,7 +151,6 @@ def get_correct_hoodmodel_from_list(df, hoodmodels):
       error = abs(cfmsum - total_flow)
       result = hoodmodel
   return result
-
 
 def facevelocity(occupied, hood_model):
   if occupied:

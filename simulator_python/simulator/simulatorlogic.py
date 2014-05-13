@@ -46,7 +46,7 @@ def generate_fumehoods_adjusted_sum(laboratory):
     result.append(np.max([laboratory.fumehoods_unadjusted_sum.loc[sample], laboratory.min_evac_series.loc[sample]]))
   laboratory.fumehoods_adjusted_sum = pd.Series(result, index=index)
 
-def generate_savings(hood_adjusted_sum, min_evac):
+def calculate_excess_evacuation(hood_adjusted_sum, min_evac):
   df = pd.DataFrame(hood_adjusted_sum - min_evac)
   df.columns = ['cfm_savings']
   return df
