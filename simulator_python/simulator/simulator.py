@@ -41,15 +41,15 @@ def setup_data(data_dir, output_dir, debug_dir, statistics_dir):
 #     result.to_csv(output_dir + str(laboratory) + '-all_fumehoods.csv')
 
 # dat control flow
-parameters = [["Current Operating Settings",4,10,4,10,.3,0]
-          ,["Reduced ACH At Night",4,10,3,6,.3,0]
-          ,["Reduced All ACH",4,8,4,8,.3,0]
-          ,["Usage Reduction Test",4,10,4,10,.4,0]
-          ,["Usage Reduction Test",4,10,4,10,.4,.25]
-          ,["Usage Reduction Test",4,10,4,10,.4,.30]
-          ,["Usage Reduction Test",4,10,4,10,.4,.50]
-          ,["Usage Reduction WIth ACH Reduction",4,8,3,6,.4,.25]
-         ]
+parameters = [["Current Operating Settings",4,10,4,10,.4,0]
+          ,["Reduced ACH at Day",4,10,3,6,.4,0]
+          ,["Reduced ACH at Night",4,8,3,6,.4,0]
+          ,["Reduced ACH Both",4,8,3,6,.4,0]
+          ,["Usage Reduction -15%",4,10,4,10,.4,.15]
+          ,["Usage Reduction -25%",4,10,4,10,.4,.25]
+          ,["Usage Reduction -30%",4,10,4,10,.4,.30]
+          ,["Usage Reduction -25%" + " with Reduced ACH",4,8,3,6,.4,.25]
+          ,["Usage Reduction with ACH Reduction",4,8,3,6,.4,.25]]
 
 def fill_values_in_laboratory_struct(laboratory):
   populate_laboratory_occupancy_data(laboratory)
@@ -63,10 +63,10 @@ laboratory_results = []
 savings_results = []
 
 def evaluate_laboratory(laboratory):
-  lab_top_dir = output_dir + laboratory.laboratory_name + "/"
+  lab_top_dir = output_dir + laboratory.laboratory_name + "/" + laboratory.laboratory_name + "--"
   if not os.path.exists(lab_top_dir):
     os.makedirs(lab_top_dir)
-  results_file = open(lab_top_dir + "/laboratory-results.csv",'w')
+  results_file = open(lab_top_dir + "laboratory-results.csv",'w')
   results_file.write("SIMULATION RESULTS\n")
   results_file.write("Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Use Reduction Factor,Minimum Evac,Excess Fumehood Evac,Savings\n")
   for param in parameters:
@@ -94,9 +94,9 @@ def evaluate_laboratory_by_parameter(laboratory, param):
   all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
   all_savings = pd.concat([x for x in savings_results], join='outer', axis = 1)
   all_savings_cummulative = pd.concat([x.cumsum() for x in savings_results], join='outer', axis = 1)
-  plot_stats_over_time(all_adjusted_sums, output_dir + laboratory.laboratory_name + '/adjusted_sums_summary.pdf')
-  plot_stats_over_time(all_savings, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')  
-  plot_stats_over_time(all_savings_cummulative, output_dir + laboratory.laboratory_name + '/savings_summary.pdf')
+  plot_stats_over_time(all_adjusted_sums, lab_top_dir + 'adjusted_sums_summary.pdf')
+  plot_stats_over_time(all_savings, lab_top_dir + 'savings_summary.pdf')  
+  plot_stats_over_time(all_savings_cummulative, lab_top_dir + 'savings_summary.pdf')
 
 def main(argv=None):
   if argv is None:

@@ -32,10 +32,10 @@ def load_fumehoods(file, laboratories, hoodmodels):
   df = pd.read_csv(file)
   return [Fumehood(data, laboratories, hoodmodels) for data in [df.ix[i].to_dict() for i in df.index]]
 
-def resample_data_to_hourly(df):
-  df = df.resample('5min',how='mean',fill_method='ffill',
+def resample_data_to_bihourly(df):
+  df = df.resample('10min',how='mean',fill_method='ffill',
                             closed='left',label='left')
-  df = df.resample('1H',how='mean',fill_method='ffill',
+  df = df.resample('2H',how='mean',fill_method='ffill',
                            closed='left',label='left')
   return df
 
@@ -107,7 +107,7 @@ def load_environment(data_directory, debug_directory):
   return (laboratories, hoodmodels, fumehoods)
 
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
-  preprocess_datastrea_text(data_directory + 'datastream_raw.txt')
+  # preprocess_datastrea_text(data_directory + 'datastream_raw.txt')
   df = load_hoods_datastream(data_directory + 'datastream_raw.txt', fumehoods)
   print df
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
@@ -129,5 +129,5 @@ def load_datastream(data_directory, debug_directory, statistics_directory, fumeh
   for fumehood in fumehoods:
     if verbose:
       print "Loading data for Fumehood " + str(fumehood)
-    fumehood.unadjusted_data = resample_data_to_half_hourly(fumehood.unadjusted_data)
+    fumehood.unadjusted_data = resample_data_to_bihourly(fumehood.unadjusted_data)
   # grouped = preprocess_datastream(df, statistics_directory, fumehoods)
