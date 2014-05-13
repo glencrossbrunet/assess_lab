@@ -77,7 +77,7 @@ def evaluate_laboratory(laboratory):
     os.makedirs(lab_top_dir)
   results_file = open(lab_top_dir + "laboratory-results.csv",'w')
   results_file.write("SIMULATION RESULTS\n")
-  results_file.write("Simulation Description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Usage Reduction Factor,Data Start,Data End,Cummulative Base Lab Evacuation,Cummulative Base Fumehood Evacuation,Cummulative Excess Fumehood Evacuation\n")
+  results_file.write("simulation_description,Day Unoccupied ACH,Day Occupied ACH,Night Unoccupied ACH,Night Occupied ACH,Fumehood Occupation Rate,Usage Reduction Factor,start_date, end_date, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, total_excess_fumehood_evacuation, total_sash_dependent_evac_per_hour, total_excess_spending\n")
   for param in parameters:
     results_file.write(evaluate_laboratory_by_parameter(laboratory, param, lab_top_dir))
 
@@ -92,25 +92,38 @@ def evaluate_laboratory_by_parameter(laboratory, param, lab_top_dir):
 
   fill_values_in_laboratory_struct(laboratory)
   excess = calculate_excess_evacuation(laboratory.summary['hood_adjusted_sum'], laboratory.summary['minimum_evac'])
-  generate_plots_for_parameterised_lab(laboratory, lab_dir)
+  
+  #generate_plots_for_parameterised_lab(laboratory, excess, lab_dir)
   
   laboratory_results.append(laboratory.summary)
   excess_evacuation.append(excess)
   all_adjusted_sums = pd.concat([x['hood_adjusted_sum'] for x in laboratory_results], join='outer', axis = 1)
-  all_savings = pd.concat([x for x in excess_evacuation], join='outer', axis = 1)
-  all_savings_cummulative = pd.concat([x.cumsum() for x in excess_evacuation], join='outer', axis = 1)
+  all_excess_hood_evac = pd.concat([x for x in excess_evacuation], join='outer', axis = 1)
+  all_excess_hood_evac_cummulative = pd.concat([x.cumsum() for x in excess_evacuation], join='outer', axis = 1)
+
+  start_date = laboratory.summary.index[0]
+  end_date = laboratory.summary.index[-1]
+  total_hours_analysed = (end_date - start_date).astype('timedelta64[h]')
+  min_lab_evac_per_hour = laboratory.summary.sum()['minimum_evac'] / total_hours_analysed
+  hood_total_evac_per_hour = laboratory.summary.sum()['hood_adjusted_sum'] / total_hours_analysed
+  base_hood_evac_per_hour = get_base_fumehood_evac_for_lab(laboratory) / total_hours_analysed
+  sash_dependent_evac_per_hour = (hood_total_evac_per_hour - base_hood_evac_per_hour)
+  total_excess_fumehood_evacuation = all_excess_hood_evac_cummulative / total_hours_analysed
+  total_sash_dependent_evac_per_hour = sash_dependent_evac_per_hour * 5.35
+  total_excess_spending = total_excess_fumehood_evacuation * 5.25
 
   plot_stats_over_time(all_adjusted_sums, lab_top_dir + 'adjusted_sums_summary.pdf')
-  plot_stats_over_time(all_savings, lab_top_dir + 'savings_summary.pdf')  
-  plot_stats_over_time(all_savings_cummulative, lab_top_dir + 'savings_summary.pdf')
-  return (','.join(map(str,param)) + ',' + str(laboratory.summary.index[0]) + ',' + str(laboratory.summary.index[-1]) + ',' + str(laboratory.summary.sum()['minimum_evac']) + ',' + str(laboratory.summary.sum()['hood_adjusted_sum']) + '\n')
+  plot_stats_over_time(all_excess_hood_evac, lab_top_dir + 'savings_summary.pdf')  
+  plot_stats_over_time(all_excess_hood_evac_cummulative, lab_top_dir + 'savings_summary.pdf')
+
+  return (','.join(map(str,param)) + ',' + ','.join(map(str, [start_date, end_date, total_hours_analysed, min_lab_evac_per_hour, hood_total_evac_per_hour, base_hood_evac_per_hour, sash_dependent_evac_per_hour, total_excess_fumehood_evacuation, total_sash_dependent_evac_per_hour, total_excess_spending])) + '\n')
   results_file.close()
 
 def main(argv=None):
   if argv is None:
     argv = sys.argv
   (laboratories, hoodmodels, fumehoods) = setup_data(data_dir, output_dir, debug_dir, statistics_dir)
-  for laboratory in laboratories[0]:
+  for laboratory in laboratories:
     evaluate_laboratory(laboratory)
 
 (options, args) = parser.parse_args()

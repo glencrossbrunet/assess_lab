@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 from simulatorstats.cfm_values import *
 from simulatorlab.fumehood import *
 
+def get_base_fumehood_evac_for_lab(laboratory):
+  result = 0
+  for fumehood in laboratory.fumehoods:
+    result += calculate_hood_base_evac(fumehood).sum()
+  return result
 
 def generate_fumehood_cfms_for_laboratory(laboratory):
   for fumehood in laboratory.fumehoods:

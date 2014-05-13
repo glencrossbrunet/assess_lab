@@ -70,17 +70,26 @@ class Fumehood:
     return np.min([self.hood_model.max_cfm, 
                    np.max([self.hood_model.min_cfm, self.faceintakecfm(sash_height, occupied)])])
 
+def calculate_hood_base_evac(fumehood):
+  result = []
+  for sample in fumehood.occupancy_data.index:
+    result.append(0, fumehood.occupancy_data.loc[sample], fumehood.hoodmodel)
+  return pd.Series(result)
+    
+
 def get_fumehood_for_bac(bac, fumehoods):
   for fumehood in fumehoods:
     if fumehood.bac == bac:
       return fumehood
   return None
 
+
 def get_hoodmodel_for_id(id, hoodmodels):
   for hoodmodel in hoodmodels:
     if hoodmodel.model == id:
       return hoodmodel
   return None
+
 
 def add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods):
   df = df.groupby('fumehood')

@@ -67,7 +67,7 @@ class Laboratory:
     return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.occupancy_percent, self.fumehood_reduction_factor])))
 
 def generate_min_evac_cfm(height, surface_area, ach, additional_evac):
-  result = (height * surface_area * ach)/60 + additional_evac
+  result = (height * surface_area * ach)/60 - additional_evac
   return result
 
 def get_min_evac_cfm_for_time(time, occupied, laboratory):

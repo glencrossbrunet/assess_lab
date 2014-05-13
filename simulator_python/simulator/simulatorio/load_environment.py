@@ -114,11 +114,7 @@ def write_loaded_datastream(df, data_directory):
 def load_datastream(data_directory, debug_directory, statistics_directory, fumehoods):
   # preprocess_datastrea_text(data_directory + 'datastream_raw.txt')
   df = load_hoods_datastream(data_directory + 'datastream_raw.txt', fumehoods)
-  print df
   add_unadjusted_fumehood_data_to_fumehoods(df, fumehoods)
-
-  for fumehood in fumehoods:
-    print fumehood.unadjusted_data
   
   with_hoodmodel = []
   for fumehood in fumehoods:
