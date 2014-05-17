@@ -39,17 +39,18 @@ def calculate_occupancy_series(index, time_start, time_end, percent_occupied_ins
         result.append(False)
   return pd.Series(result, index=index)
 
+
 '''
 LABORATORY LEVEL ALGORITHMS
 '''
 
 def aggregate_hood_occupancy_to_lab(fumehoods):
   index = pd.Index([])
-  for fumehood in fumehoods:
-    index = index + fumehood.dataframe.index
+  for hood in fumehoods:
+    index = index + hood.dataframe.index
   df = pd.DataFrame()
-  for fumehood in fumehoods:
-    df[fumehood] = fumehood.dataframe['occupancy']
+  for hood in fumehoods:
+    df[hood] = hood.dataframe['occupancy']
   return df.sum(axis=1)
 
 
@@ -64,16 +65,13 @@ def calculate_min_lab_evacuation_series(laboratory, occupancy):
 def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy):
   df = pd.DataFrame(index=occupancy.index)
   for hood in fumehoods:
-    df[fumehood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy)
+    df[hood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy)
+  return df.sum(axis=1)
 
 
 def calculate_min_additional_hood_evacuation_series(min_lab_evacuation,min_summed_hood_evacuation_cfm):
-  return (min_summed_hood_evacuation_cfm - min_lab_evacuation).applymap(lambda x : x if x > 0 else 0)
-
-
-def calculate_real_fumehood_evacuation_series(fumehoods):
-  return np.sum([hood.dataframe[''] for hood in fumehoods],axis=0)
-
+  return (min_summed_hood_evacuation_cfm - min_lab_evacuation).apply(lambda x : x if x > 0 else 0)
+  
 
 
 '''
@@ -82,6 +80,7 @@ HOOD LEVEL ALGORITHMS
 
 def calculate_hood_evacuation_series(hood, percent_open, occupancy):
   result = []
-  for time in occupancy.index:
+  for time in percent_open.index:
     cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time])
-  return pd.Series(result)
+    result.append(cfm)
+  return pd.Series(result, index = percent_open.index)

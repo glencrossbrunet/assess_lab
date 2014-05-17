@@ -43,8 +43,8 @@ def load_simulator_objects(data_directory, debug_directory):
       fumehoods_with_labs.append(fumehood)
 
   fumehoods = fumehoods_with_labs
-
   fumehoods = [hood for hood in fumehoods if hood.bac > 0]
+  fumehoods = [hood for hood in fumehoods if hood.model is not None]
 #  for fumehood in fumehoods:
 #    if fumehood.bac == -1:
 #      fumehood.bac = get_random_working_bac(fumehoods, -1)
