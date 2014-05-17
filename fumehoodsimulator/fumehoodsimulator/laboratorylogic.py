@@ -69,11 +69,6 @@ def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy):
   return df.sum(axis=1)
 
 
-def calculate_min_additional_hood_evacuation_series(min_lab_evacuation,min_summed_hood_evacuation_cfm):
-  return (min_summed_hood_evacuation_cfm - min_lab_evacuation).apply(lambda x : x if x > 0 else 0)
-  
-
-
 '''
 HOOD LEVEL ALGORITHMS
 '''

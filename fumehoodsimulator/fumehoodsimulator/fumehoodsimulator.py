@@ -42,11 +42,14 @@ def generate_result_for_lab_and_parameter(laboratory, description, new_ach_unocc
   laboratory.dataframe['occupancy'] = aggregate_hood_occupancy_to_lab(laboratory.fumehoods)
   laboratory.dataframe['min_lab_evacuation_cfm'] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe['occupancy'])
   laboratory.dataframe['min_summed_hood_evacuation_cfm'] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe['occupancy'])
-  laboratory.dataframe['min_additional_hood_evacuation_cfm'] = calculate_min_additional_hood_evacuation_series(laboratory.dataframe['min_lab_evacuation_cfm'], laboratory.dataframe['min_summed_hood_evacuation_cfm'])
-  laboratory.dataframe['fumehood_evacuation_cfm'] = np.sum([hood.dataframe['evacuation_cfm'] for hood in laboratory.fumehoods],axis=0)
-  laboratory.dataframe['total_lab_evacuation'] = laboratory.dataframe[['min_lab_evacuation_cfm', 'fumehood_evacuation_cfm']].min(axis=1)
+  laboratory.dataframe['min_additional_hood_evacuation_cfm'] = (laboratory.dataframe['min_lab_evacuation_cfm'] - laboratory.dataframe['min_summed_hood_evacuation_cfm']).apply(lambda x : x if x > 0 else 0)
+  laboratory.dataframe['min_possible_laboratory_evac'] = laboratory.dataframe[['min_lab_evacuation_cfm','min_summed_hood_evacuation_cfm']].max(axis=1)
+  laboratory.dataframe['real_fumehood_evacuation_cfm'] = np.sum([hood.dataframe['evacuation_cfm'] for hood in laboratory.fumehoods],axis=0)
+  laboratory.dataframe['total_lab_evacuation_cfm'] = laboratory.dataframe[['real_fumehood_evacuation_cfm','min_possible_laboratory_evac']].max(axis=1)
+  laboratory.dataframe['excess_evacuation'] = (laboratory.dataframe['total_lab_evacuation_cfm'] -laboratory.dataframe['min_possible_laboratory_evac']).apply(lambda x : x if x > 0 else 0)
 
   laboratory.dataframe.to_csv(output_dir + laboratory.laboratory_name + "--dataframe.csv")
+  laboratory.dataframe.describe().to_csv(output_dir + laboratory.laboratory_name + "--dataframe-description.csv")
 
 
 def main(argv=None):
