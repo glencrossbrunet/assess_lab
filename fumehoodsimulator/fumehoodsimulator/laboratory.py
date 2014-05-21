@@ -28,8 +28,6 @@ class Laboratory:
     self.fumehood_reduction_factor = 0
     self.fumehoods = []
 
-    self.dataframe = pd.DataFrame()
-
   def reset_and_calculate_mins(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_fumehood_reduction_factor):
    
     self.dataframe = pd.DataFrame()
@@ -47,8 +45,6 @@ class Laboratory:
 
     self.fumehood_reduction_factor = new_fumehood_reduction_factor
 
-#    for fumehood in self.fumehoods:
-#      fumehood.reset()
 
   def __str__(self):
     return self.laboratory_name + '==' + str(','.join(map(str, [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.fumehood_occupancy_percent, self.fumehood_reduction_factor])))
@@ -67,7 +63,6 @@ class HoodModel:
 
   def __str__(self):
     return self.model
-
 
 
 '''
@@ -101,6 +96,7 @@ class Fumehood:
     self.prompt_type = initial_data['prompt_type']
 
     self.dataframe = pd.DataFrame()
+
 
   def __str__(self):
     if self.model.model is None or self.laboratory is None:

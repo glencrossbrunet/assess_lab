@@ -2,67 +2,121 @@ from simulatorio import *
 from laboratorylogic import *
 from baseformulae import *
 from laboratory import *
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-import argparse, threading, sys, copy
+import argparse, threading, sys, copy, os
 import pandas as pd
 import numpy as np
 
 '''
 Main control flow is presented here.
 '''
-
-data_dir = "E:/git/glencrossbrunet/assess_lab/new-dataset/"
-output_dir = "E:/git/glencrossbrunet/assess_lab/output/"
-debug_dir = "E:/git/glencrossbrunet/assess_lab/debug/"
-statistics_dir = "E:/git/glencrossbrunet/assess_lab/stats/"
-datastream_name = "datastream_raw_short.txt"
+base_path = "E:/git/glencrossbrunet/assess_lab/"
+data_dir = base_path + "input/"
+datastream_name = "datastream_raw_medium.txt"
+lab_result_f = None
+postfix = '-medium'
 
 # if false, then a laboratory must have a fumehood datapoint for *every* hour that is included in its analysis
 use_incomplete_times = True
 
-
-parameters = [["Reduced ACH at Day",4,7,2,4,0]
-          ,["Current Operating Settings",4,10,4,10,0]
-          ,["Reduced ACH at Night",4,8,3,6,0]
-          ,["Reduced ACH Both",4,8,3,6,0]
-          ,["Usage Reduction -15%",4,10,4,10,.15]
-          ,["Usage Reduction -25%",4,10,4,10,.25]
-          ,["Usage Reduction -30%",4,10,4,10,.30]
-          ,["Usage Reduction -25%" + " with Reduced ACH",4,8,3,6,.25]
-          ,["Usage Reduction with ACH Reduction",4,8,3,6,.25]]
+parameters = pd.read_csv(data_dir + "parameters.csv", header=0, index_col=0)
 
 
-def generate_result_for_lab_and_parameter(laboratory, description, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_fumehood_reduction_factor):
-  laboratory.reset_and_calculate_mins(new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_fumehood_reduction_factor)
-
+def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir):
+  laboratory.reset_and_calculate_mins(parameter['day_unoccupied_ach'], parameter['day_occupied_ach'], parameter['night_unoccupied_ach'], parameter['night_occupied_ach'], parameter['fumehood_reduction_multiplier'])
   for hood in laboratory.fumehoods:
+    print "Processing Hood " + str(hood)
     hood.dataframe['occupancy'] = calculate_occupancy_series(hood.dataframe['percent_open'].index, laboratory.day_start, laboratory.night_start, laboratory.fumehood_occupancy_percent, 0.1)
-    hood.dataframe['evacuation_cfm'] = calculate_hood_evacuation_series(hood, hood.dataframe['percent_open'], hood.dataframe['occupancy'])
+    hood.dataframe['evacuation_cfm'] = calculate_hood_evacuation_series(hood, hood.dataframe['percent_open'], hood.dataframe['occupancy'], laboratory.fumehood_reduction_factor)
+    hood.dataframe['datastream_and_calculated_cfm_std'] = hood.dataframe[['datastream_flow','evacuation_cfm']].std(axis=1)
+    hood.dataframe['datastream_and_calculated_cfm_mean'] = hood.dataframe[['datastream_flow','evacuation_cfm']].mean(axis=1)
+    hood.dataframe['fumehood'] = pd.Series([str(hood) for x in hood.dataframe['occupancy'].index], index=hood.dataframe['occupancy'].index)
+#    hood.dataframe.to_csv(output_dir + str(laboratory) + '--' + str(hood) + '--dataframe.csv')
+    hood.dataframe.describe().to_csv(output_dir + str(laboratory) + '--' + str(hood) + '--dataframe-description.csv')
+    hood.dataframe[['datastream_flow','evacuation_cfm']].plot()
+    plt.savefig(output_dir + str(laboratory) + '--' + str(hood) + '--cfm_difference.pdf')
+    
+  concatted = pd.concat([hood.dataframe for hood in laboratory.fumehoods])
+  sns.lmplot("percent_open", "datastream_flow", concatted, hue="fumehood")
+  plt.savefig(output_dir + str(laboratory) + '--cfm_datastream_flow_lmplot.pdf')
+  sns.lmplot("percent_open", "evacuation_cfm", concatted, hue="fumehood")
+  plt.savefig(output_dir + str(laboratory) + '--cfm_calculated_cfm_lmplot.pdf')
+
 
   laboratory.dataframe['occupancy'] = aggregate_hood_occupancy_to_lab(laboratory.fumehoods)
-  laboratory.dataframe['min_lab_evacuation_cfm'] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe['occupancy'])
-  laboratory.dataframe['min_summed_hood_evacuation_cfm'] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe['occupancy'])
-  laboratory.dataframe['min_additional_hood_evacuation_cfm'] = (laboratory.dataframe['min_lab_evacuation_cfm'] - laboratory.dataframe['min_summed_hood_evacuation_cfm']).apply(lambda x : x if x > 0 else 0)
-  laboratory.dataframe['min_possible_laboratory_evac'] = laboratory.dataframe[['min_lab_evacuation_cfm','min_summed_hood_evacuation_cfm']].max(axis=1)
-  laboratory.dataframe['real_fumehood_evacuation_cfm'] = np.sum([hood.dataframe['evacuation_cfm'] for hood in laboratory.fumehoods],axis=0)
-  laboratory.dataframe['total_lab_evacuation_cfm'] = laboratory.dataframe[['real_fumehood_evacuation_cfm','min_possible_laboratory_evac']].max(axis=1)
-  laboratory.dataframe['excess_evacuation'] = (laboratory.dataframe['total_lab_evacuation_cfm'] -laboratory.dataframe['min_possible_laboratory_evac']).apply(lambda x : x if x > 0 else 0)
+  
+  laboratory.dataframe['min_lab_cfm'] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe['occupancy'])
+  
+  laboratory.dataframe['min_hood_cfm'] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe['occupancy'])
+  
+  laboratory.dataframe['min_additional_hood_cfm'] = (laboratory.dataframe['min_hood_cfm'] - laboratory.dataframe['min_lab_cfm']).apply(lambda x : x if x > 0 else 0)
+  
+  laboratory.dataframe['min_possible_lab_cfm'] = laboratory.dataframe[['min_lab_cfm','min_hood_cfm']].max(axis=1)
+  
+  laboratory.dataframe['calc_hood_cfm'] = np.sum([hood.dataframe['evacuation_cfm'] for hood in laboratory.fumehoods],axis=0)
+  
+  laboratory.dataframe['stream_hood_cfm'] = np.sum([hood.dataframe['datastream_flow'] for hood in laboratory.fumehoods],axis=0)
 
-  laboratory.dataframe.to_csv(output_dir + laboratory.laboratory_name + "--dataframe.csv")
-  laboratory.dataframe.describe().to_csv(output_dir + laboratory.laboratory_name + "--dataframe-description.csv")
+  laboratory.dataframe[['calc_hood_cfm','stream_hood_cfm']].plot()
+  plt.savefig(output_dir + str(laboratory) + "-stream-vs-calc.pdf")
+  
+  laboratory.dataframe['stream_and_calc_hood_cfm_std'] = np.sum([hood.dataframe['datastream_and_calculated_cfm_std'] for hood in laboratory.fumehoods],axis=0)
+  
+  laboratory.dataframe['stream_and_calc_hood_cfm_mean'] = np.sum([hood.dataframe['datastream_and_calculated_cfm_mean'] for hood in laboratory.fumehoods],axis=0)
+  
+  laboratory.dataframe['calc_total_lab_cfm'] = laboratory.dataframe[['calc_hood_cfm','min_possible_lab_cfm']].max(axis=1)
+  
+  laboratory.dataframe['stream_total_lab_cfm'] = laboratory.dataframe[['calc_hood_cfm','min_possible_lab_cfm']].max(axis=1)
+  
+  laboratory.dataframe['calc_excess_cfm'] = (laboratory.dataframe['calc_total_lab_cfm'] -laboratory.dataframe['min_possible_lab_cfm']).apply(lambda x : x if x > 0 else 0)
+
+  laboratory.dataframe['stream_excess_cfm'] = (laboratory.dataframe['stream_total_lab_cfm'] -laboratory.dataframe['min_possible_lab_cfm']).apply(lambda x : x if x > 0 else 0)
+
+  laboratory.dataframe[['min_lab_cfm', 'min_additional_hood_cfm', 'calc_excess_cfm','calc_total_lab_cfm']].plot()
+  plt.savefig(stats_dir + str(laboratory) + "-calc-base-hood-sash-cfm.pdf")
+  laboratory.dataframe[['min_lab_cfm', 'min_additional_hood_cfm', 'stream_excess_cfm','stream_total_lab_cfm']].plot()
+  plt.savefig(stats_dir + str(laboratory) + "-stream-base-hood-sash-cfm.pdf")
+#  laboratory.dataframe.to_csv(output_dir + str(laboratory) + "--dataframe.csv")
+  laboratory.dataframe.describe().to_csv(stats_dir + str(laboratory) + "--dataframe-description.csv")
+  plt.close("all")
+
+  result = laboratory.dataframe.mean(axis=0)
+  result['description'] = description
+  result['ach_unoccupied_day'] = new_ach_unoccupied_day
+  result['ach_occupied_day'] = new_ach_occupied_day
+  result['ach_unoccupied_night'] = new_ach_unoccupied_night
+  result['ach_occupied_night'] = new_ach_occupied_night
+  result['fumehood_reduction_factor'] = new_fumehood_reduction_factor
+  return result
 
 
 def main(argv=None):
   if argv is None:
     argv = sys.argv
+  debug_dir = base_path + "/debug" + postfix + "/"
+  if not os.path.exists(debug_dir):
+    os.makedirs(debug_dir)
   (laboratories, models, hoods) = load_simulator_objects(data_dir, debug_dir)
   hood_datastream = load_hood_datastream(data_dir + datastream_name, hoods)
   process_hood_datastream(hood_datastream, hoods)
-  thead_set = {}
-  for laboratory in laboratories:
-    for parameter in parameters:
-      generate_result_for_lab_and_parameter(copy.deepcopy(laboratory), parameter[0], parameter[1], parameter[2], parameter[3], parameter[4], parameter[5])
-      sys.exit()
-      # thread_set[(laboratory, parameter)] = threading.Thread(target=generate_result_for_lab_and_parameter, args = (laboratory, parameter[0], parameter[1], param[2], param[3], param[4], param[5]))
+  for laboratory in laboratories: 
+    lab_result = []
+    output_dir = base_path + 'results/' + laboratory.laboratory_name + "/output" + postfix + "/"
+    stats_dir = base_path + 'results/' + laboratory.laboratory_name + "/statistics" + postfix + "/"
+    results_dir = base_path + 'results/' + laboratory.laboratory_name + "/results" + postfix + "/"
+    for directory in [output_dir, stats_dir, results_dir]:
+      if not os.path.exists(directory):
+        os.makedirs(directory)
+    for index in parameters.index:
+      parameter = parameters.loc[index]
+      print parameter
+      print "Working on laboratory " + str(laboratory)
+      print "Parameters : " + str(parameter)
+      result = generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir)
+      lab_result.append(result)
+    lab_result = pd.DataFrame(lab_result)
+    lab_result.to_csv(results_dir + laboratory.laboratory_name + "results.csv")
 
 main()

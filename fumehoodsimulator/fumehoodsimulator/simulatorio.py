@@ -9,9 +9,9 @@ import numpy as np
 
 def resample_data_to_hourly(df):
   df = df.resample('5min',how='mean',fill_method='ffill',
-                            closed='left',label='left')
+                            closed='left',label='left', limit=5)
   df = df.resample('1H',how='mean',fill_method='ffill',
-                           closed='left',label='left')
+                           closed='left',label='left', limit=5)
   return df
 
 
@@ -63,6 +63,8 @@ def load_hood_datastream(file, fumehoods):
   df.tz_localize('UTC', copy=False).tz_convert('EST', copy=False)
 
   bac_to_fumehood_series = df["hood"].apply(lambda x : get_fumehood_for_bac(x, fumehoods))
+  converted_flow = df["flow"].apply(lambda x : 2.11888 * x)
+  df["flow"] = converted_flow
   df["hood"] = bac_to_fumehood_series
 
   return df.groupby("hood")

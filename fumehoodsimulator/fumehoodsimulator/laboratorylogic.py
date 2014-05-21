@@ -3,6 +3,11 @@ import numpy as np
 from baseformulae import *
 
 
+
+'''
+AUXILIARY FUNCTIONS
+'''
+
 def get_laboratory_for_id(id, laboratories):
   for laboratory in laboratories:
     if laboratory.laboratory_name == id:
@@ -23,6 +28,8 @@ def get_hoodmodel_for_id(id, hoodmodels):
       return hoodmodel
   return None
 
+
+
 '''
 GENERAL ALGORITHMS
 '''
@@ -38,6 +45,7 @@ def calculate_occupancy_series(index, time_start, time_end, percent_occupied_ins
       else:
         result.append(False)
   return pd.Series(result, index=index)
+
 
 
 '''
@@ -73,9 +81,9 @@ def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy):
 HOOD LEVEL ALGORITHMS
 '''
 
-def calculate_hood_evacuation_series(hood, percent_open, occupancy):
+def calculate_hood_evacuation_series(hood, percent_open, occupancy, percent_reduction):
   result = []
   for time in percent_open.index:
-    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time])
+    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time], percent_reduction)
     result.append(cfm)
   return pd.Series(result, index = percent_open.index)
