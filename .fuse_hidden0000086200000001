@@ -94,7 +94,6 @@ def main(argv=None):
   debug_dir = base_path + "/debug" + postfix + "/"
   if not os.path.exists(debug_dir):
     os.makedirs(debug_dir)
-  open(debug_dir + "testfile","w")
   (laboratories, models, hoods) = load_simulator_objects(data_dir, debug_dir)
   hood_datastream = load_hood_datastream(data_dir + datastream_name, hoods, debug_dir)
   process_hood_datastream(hood_datastream, hoods, debug_dir)

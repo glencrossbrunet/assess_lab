@@ -2,17 +2,10 @@ from laboratorylogic import *
 from baseformulae import *
 from laboratory import *
 
-import argparse, threading, sys
+import argparse, threading
 import pandas as pd
 import numpy as np
 
-
-def resample_data_to_hourly(df):
-  df = df.resample('5min',how='mean',fill_method='ffill',
-                            closed='left',label='left', limit=5)
-  df = df.resample('1H',how='mean',fill_method='ffill',
-                           closed='left',label='left', limit=5)
-  return df
 
 
 def load_laboratories(file):
@@ -77,8 +70,3 @@ def load_hood_datastream(file, fumehoods, debug_dir):
 
   return df.groupby("hood")
 
-def process_hood_datastream(hood_datastream, hoods, debug_dir):
-  for k, v in hood_datastream:
-    k.dataframe['percent_open'] = v['open']
-    k.dataframe['datastream_flow'] = v['flow']
-    k.dataframe = resample_data_to_hourly(k.dataframe)
