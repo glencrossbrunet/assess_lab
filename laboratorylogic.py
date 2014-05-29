@@ -5,6 +5,7 @@ import sys
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+OUTPUT_FOLDER = "output-uqam/"
 
 """
 AUXILIARY FUNCTIONS
@@ -50,18 +51,18 @@ def process_hood_datastream(hood_datastream, hoods, debug_dir):
       summary.index = k.dataframe.index
     summary[k.bac] = k.dataframe["percent_open"]
 
-  summary.count(axis=0).transpose().to_csv("output/general-stats/datastream-flow-values-per-fumehood.csv")
-  summary.count(axis=0).transpose().describe().to_csv("output/general-stats/datastream-flow-values-per-fumehood--description.csv")
+  summary.count(axis=0).transpose().to_csv(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-fumehood.csv")
+  summary.count(axis=0).transpose().describe().to_csv(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-fumehood--description.csv")
   summary.count(axis=0).transpose().plot(kind="bar")
-  plt.savefig("output/datastream-flow-values-per-fumehood.pdf")
-  summary.count(axis=1).to_csv("output/general-stats/datastream-flow-values-per-hour.csv")
+  plt.savefig(OUTPUT_FOLDER + "/datastream-flow-values-per-fumehood.pdf")
+  summary.count(axis=1).to_csv(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-hour.csv")
   summary.count(axis=1).transpose().plot(kind="line")
-  plt.savefig("output/general-stats/datastream-flow-values-per-hour.pdf")
+  plt.savefig(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-hour.pdf")
   fumehood_percent_open_means = summary.mean(axis=0)
   fumehood_percent_open_means.sort()
-  fumehood_percent_open_means.to_csv("output/general-stats/datastream-flow-values-per-fumehood-ordered-mean.csv")
+  fumehood_percent_open_means.to_csv(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-fumehood-ordered-mean.csv")
 
-  output_f = open("output/general-stats/datastream-flow-values-per-fumehood-ordered-self-lag-correlation.csv", "w")
+  output_f = open(OUTPUT_FOLDER + "/general-stats/datastream-flow-values-per-fumehood-ordered-self-lag-correlation.csv", "w")
   for i, col in summary.iteritems():
     correlation =  col.corr(col.shift(1))
     output_f.write(str(i) + "," + str(correlation) + "\n")
@@ -106,10 +107,10 @@ def calculate_min_lab_evacuation_series(laboratory, occupancy):
   return pd.Series(result, index=occupancy.index)
 
 
-def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, fumehood_multiplier):
+def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, sash_height_multiplier):
   df = pd.DataFrame(index=occupancy.index)
   for hood in fumehoods:
-    df[hood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy, fumehood_multiplier)
+    df[hood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy, sash_height_multiplier)
   return df.sum(axis=1)
 
 
@@ -117,9 +118,9 @@ def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, fumehood_m
 HOOD LEVEL ALGORITHMS
 """
 
-def calculate_hood_evacuation_series(hood, percent_open, occupancy, fumehood_multiplier):
+def calculate_hood_evacuation_series(hood, percent_open, occupancy, sash_height_multiplier):
   result = []
   for time in percent_open.index:
-    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time], fumehood_multiplier)
+    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time], sash_height_multiplier)
     result.append(cfm)
   return pd.Series(result, index = percent_open.index)

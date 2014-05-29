@@ -22,32 +22,36 @@ class Laboratory:
         setattr(self, key, dictionary[key])
     for key in kwargs:
       setattr(self, key, kwargs[key])
-    self.day_start = pd.to_datetime(self.day_start)
-    self.night_start = pd.to_datetime(self.night_start)
+    self.ach_day_start = pd.to_datetime(self.ach_day_start)
+    self.ach_night_start = pd.to_datetime(self.ach_night_start)
 
-    self.fumehood_multiplier = 1
+    self.sash_height_multiplier = 1
     self.fumehoods = []
 
-  def reset_and_calculate_mins(self, new_ach_unoccupied_day, new_ach_occupied_day, new_ach_unoccupied_night, new_ach_occupied_night, new_fumehood_multiplier):
+  def reset_and_calculate_mins(self, new_day_unoccupied_ach, new_day_occupied_ach, new_night_unoccupied_ach, new_night_occupied_ach, new_sash_height_multiplier):
    
     self.dataframe = pd.DataFrame()
 
-    self.ach_unoccupied_day = new_ach_unoccupied_day
-    self.ach_occupied_day = new_ach_occupied_day
-    self.ach_unoccupied_night = new_ach_unoccupied_night
-    self.ach_occupied_night = new_ach_occupied_night
+    if new_day_unoccupied_ach != "NA":
+      self.day_unoccupied_ach = new_day_unoccupied_ach
+    if new_day_occupied_ach != "NA":
+      self.day_occupied_ach = new_day_occupied_ach
+    if new_night_unoccupied_ach != "NA":
+      self.night_unoccupied_ach = new_night_unoccupied_ach
+    if new_night_occupied_ach != "NA":
+      self.night_occupied_ach = new_night_occupied_ach
 
-    self.min_evac_unoccupied_day = calculate_min_laboratory_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_day, self.additional_evac)
-    self.min_evac_unoccupied_night = calculate_min_laboratory_evac_cfm(self.height, self.surface_area, self.ach_unoccupied_night, self.additional_evac)
-    self.min_evac_occupied_day = calculate_min_laboratory_evac_cfm(self.height, self.surface_area, self.ach_occupied_day, self.additional_evac)
-    self.min_evac_occupied_night = calculate_min_laboratory_evac_cfm(self.height, self.surface_area, self.ach_occupied_night, self.additional_evac)
+    self.min_evac_unoccupied_day = calculate_min_laboratory_evac_cfm(self.ceil_height, self.surface_area, self.day_unoccupied_ach, self.additional_evac)
+    self.min_evac_unoccupied_night = calculate_min_laboratory_evac_cfm(self.ceil_height, self.surface_area, self.night_unoccupied_ach, self.additional_evac)
+    self.min_evac_occupied_day = calculate_min_laboratory_evac_cfm(self.ceil_height, self.surface_area, self.day_occupied_ach, self.additional_evac)
+    self.min_evac_occupied_night = calculate_min_laboratory_evac_cfm(self.ceil_height, self.surface_area, self.night_occupied_ach, self.additional_evac)
 
 
-    self.fumehood_multiplier = new_fumehood_multiplier
+    self.sash_height_multiplier = new_sash_height_multiplier
 
 
   def __str__(self):
-    return self.laboratory_name + '==' + str(';'.join(map(lambda x : str(x).replace(".",","), [self.ach_unoccupied_day, self.ach_occupied_day, self.ach_unoccupied_night, self.ach_occupied_night, self.fumehood_occupancy_percent, self.fumehood_multiplier])))
+    return self.laboratory_name + '==' + str(';'.join(map(lambda x : str(x).replace(".",","), [self.day_unoccupied_ach, self.day_occupied_ach, self.night_unoccupied_ach, self.night_occupied_ach, self.fumehood_occupancy_rate, self.sash_height_multiplier])))
 
 
 class HoodModel:
@@ -78,22 +82,10 @@ class Fumehood:
   def __init__(self, initial_data, laboratories, hoodmodels):
     self.hood_id = initial_data['hood_id']
     self.bac = initial_data['bac']
-    self.mcgill_tag = initial_data['mcgill_tag']
-    self.hood_num = initial_data['hood_num']
-    self.workshop = initial_data['workshop']
     self.laboratory = get_laboratory_for_id(initial_data['laboratory'], laboratories)
     if(self.laboratory is not None):
       self.laboratory.fumehoods.append(self)
     self.model = get_hoodmodel_for_id(initial_data['hood_model'], hoodmodels)
-    self.install_time = initial_data['install_time']
-    self.follow_up_date = initial_data['follow_up_date']
-    self.mac_address = initial_data['mac_address']
-    self.gateway_id = initial_data['gateway_id']
-    self.user_type = initial_data['user_type']
-    self.flag_data = initial_data['flag_data']
-    self.description_notes = initial_data['description_notes']
-    self.installation_notes = initial_data['installation_notes']
-    self.prompt_type = initial_data['prompt_type']
 
     self.dataframe = pd.DataFrame()
 

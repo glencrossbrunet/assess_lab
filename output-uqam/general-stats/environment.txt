@@ -1,0 +1,9 @@
+Laboratories :
+PK-2260==6,0;6,0;6,0;6,0;0,7;1 | PK-2270==6,0;6,0;6,0;6,0;nan;1 | PK-2375==nan;nan;nan;nan;nan;1 | PK-2660==nan;nan;nan;nan;nan;1 | PK-2759==nan;nan;nan;nan;nan;1 | PK-2785==nan;nan;nan;nan;nan;1 | PK-3270==nan;nan;nan;nan;nan;1 | PK-5270==nan;nan;nan;nan;nan;1 | PK-5365==nan;nan;nan;nan;nan;1 | PK-5370==nan;nan;nan;nan;nan;1 | PK-5465==nan;nan;nan;nan;nan;1 | PK-5670==nan;nan;nan;nan;nan;1 | PK-5780==nan;nan;nan;nan;nan;1 | PK-5791==nan;nan;nan;nan;nan;1 | PK-5875==nan;nan;nan;nan;nan;1
+
+Hoodmodels :
+VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | not in evac | not in evac | not in evac | not in evac | VAV-48-770-175 | VAV-48-770-175 | VAV-48-770-175 | not in evac | not in evac | VAV-48-770-175 | VAV-48-770-175 | VAV-120-770-175 | VAV-48-770-175
+
+Fumehoods with Laboratories :
+PK-2260-001__VAV-48-770-175 | PK-2270-001__VAV-48-770-175 | PK-2375-001__VAV-48-770-175 | PK-2660-001__VAV-48-770-175 | PK-2759-001__VAV-48-770-175 | PK-2785-001__VAV-48-770-175 | PK-5365-001__VAV-48-770-175 | PK-5370-001__VAV-48-770-175 | PK-5465-001__VAV-48-770-175 | PK-5780-001__VAV-48-770-175 | PK-5791-001__VAV-48-770-175 | PK-5875-001__VAV-48-770-175
+

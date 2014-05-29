@@ -14,9 +14,9 @@ Main control flow is presented here.
 """
 base_path = ""
 data_dir = base_path + "input-uqam/"
-datastream_name = "datastream_raw_medium.txt"
+datastream_name = "datastream_raw_processed.txt"
 lab_result_f = None
-postfix = "-full"
+postfix = ""
 
 USE_EXISTING_VALUES = False
 
@@ -27,7 +27,7 @@ parameters = pd.read_csv(data_dir + "parameters.csv", header=0, index_col=0)
 
 
 def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir):
-  laboratory.reset_and_calculate_mins(parameter["day_unoccupied_ach"], parameter["day_occupied_ach"], parameter["night_unoccupied_ach"], parameter["night_occupied_ach"], parameter["fumehood_reduction_multiplier"])
+  laboratory.reset_and_calculate_mins(parameter["day_unoccupied_ach"], parameter["day_occupied_ach"], parameter["night_unoccupied_ach"], parameter["night_occupied_ach"], parameter["sash_height_multiplier"])
   
   print laboratory.laboratory_name
 
@@ -70,10 +70,10 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
     print "Processing Hood " + str(hood)
     
     try:
-      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.fumehood_multiplier)
+      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
     except:
-      hood.dataframe["occupancy"] = calculate_occupancy_series(hood.dataframe["percent_open"].index, laboratory.day_start, laboratory.night_start, laboratory.fumehood_occupancy_percent, 0.1)
-      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.fumehood_multiplier)
+      hood.dataframe["occupancy"] = calculate_occupancy_series(hood.dataframe["percent_open"].index, laboratory.day_start, laboratory.night_start, laboratory.fumehood_occupancy_rate, 0.1)
+      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
     
     hood.dataframe["datastream_and_calculated_cfm_std"] = hood.dataframe[["datastream_flow","evacuation_cfm"]].std(axis=1)
     hood.dataframe["datastream_and_calculated_cfm_mean"] = hood.dataframe[["datastream_flow","evacuation_cfm"]].mean(axis=1)
@@ -98,7 +98,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   
   laboratory.dataframe["min_lab_cfm"] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe["occupancy"])
   
-  laboratory.dataframe["min_hood_cfm"] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe["occupancy"], laboratory.fumehood_multiplier)
+  laboratory.dataframe["min_hood_cfm"] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe["occupancy"], laboratory.sash_height_multiplier)
   
   laboratory.dataframe["min_additional_hood_cfm"] = (laboratory.dataframe["min_hood_cfm"] - laboratory.dataframe["min_lab_cfm"]).apply(lambda x : x if x > 0 else 0)
   

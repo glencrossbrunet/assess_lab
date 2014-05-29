@@ -47,7 +47,7 @@ def calculate_face_intake_cfm(hood, sash, occupied):
   return get_hood_face_velocity(hood, occupied) * sash * hood.model.sash_width / 144
 
 
-def calculate_bounded_hood_cfm(hood, sash_percent, occupied, fumehood_multiplier):
+def calculate_bounded_hood_cfm(hood, sash_percent, occupied, sash_height_multiplier):
   sash = sash_percent * hood.model.max_sash_height * 0.01
-  return np.min([hood.model.max_cfm, np.max([hood.model.min_cfm, fumehood_multiplier * np.random.randint(95,105) * 0.01 * calculate_face_intake_cfm(hood, sash, occupied)])])
+  return np.min([hood.model.max_cfm, np.max([hood.model.min_cfm, sash_height_multiplier * np.random.randint(95,105) * 0.01 * calculate_face_intake_cfm(hood, sash, occupied)])])
 
