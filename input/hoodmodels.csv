@@ -10,3 +10,4 @@ sash_width,depth,max_sash_height,max_cfm,min_cfm,face_vel_occupied,face_vel_unoc
 38,na,30,650,210,130,80,otto-38-c
 38,na,28,650,210,130,80,otto-38-d
 60,na,62,1200,320,130,80,otto-60
+50,na,30,600,200,100,80,dummy

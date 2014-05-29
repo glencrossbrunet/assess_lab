@@ -60,9 +60,6 @@ def load_hood_datastream(file, fumehoods, debug_dir):
   df = df[df.flow > 10]
   df.describe().to_csv(debug_dir + "filtered_datastream.csv")
 
-  for hood, val in df.groupby("hood"):
-    val.describe().to_csv(debug_dir + str(hood) + ".csv") 
-
   bac_to_fumehood_series = df["hood"].apply(lambda x : get_fumehood_for_bac(x, fumehoods))
   converted_flow = df["flow"].apply(lambda x : 2.11888 * x)
   df["flow"] = converted_flow

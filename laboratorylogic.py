@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from baseformulae import *
 import sys
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 """
@@ -10,10 +11,11 @@ AUXILIARY FUNCTIONS
 """
 
 def resample_data_to_hourly(df):
-  df = df.resample('5min',how='mean',fill_method='ffill',
-                            closed='left',label='left', limit=3)
-  df = df.resample('1H',how='mean',fill_method='ffill',
-                           closed='left',label='left', limit=3)
+  df = df.resample('5min',how='mean',fill_method='ffill', closed='left',label='left', limit=1)
+  df = df.resample('15min',how='mean',fill_method='ffill', closed='left',label='left', limit=1)
+  df = df.resample('1H',how='mean',fill_method='ffill', closed='left',label='left', limit=2)
+  df = df.resample('1H',how='mean',fill_method='bfill', closed='left',label='left', limit=2)
+
   return df
 
 
@@ -44,12 +46,25 @@ def process_hood_datastream(hood_datastream, hoods, debug_dir):
     k.dataframe["percent_open"] = v["open"]
     k.dataframe["datastream_flow"] = v["flow"]
     k.dataframe = resample_data_to_hourly(k.dataframe)
-    summary[k] = k.dataframe["datastream_flow"]
-  print summary
-  summary.count(axis=0).transpose().to_csv(debug_dir + "datastream-flow-values-per-fumehood.csv")
-  summary.count(axis=1).to_csv(debug_dir + "datastream-flow-values-per-hour.csv")
-  sys.exit()
+    if summary.index is None:
+      summary.index = k.dataframe.index
+    summary[k.bac] = k.dataframe["percent_open"]
 
+  summary.count(axis=0).transpose().to_csv("output/general-stats/datastream-flow-values-per-fumehood.csv")
+  summary.count(axis=0).transpose().describe().to_csv("output/general-stats/datastream-flow-values-per-fumehood--description.csv")
+  summary.count(axis=0).transpose().plot(kind="bar")
+  plt.savefig("output/datastream-flow-values-per-fumehood.pdf")
+  summary.count(axis=1).to_csv("output/general-stats/datastream-flow-values-per-hour.csv")
+  summary.count(axis=1).transpose().plot(kind="line")
+  plt.savefig("output/general-stats/datastream-flow-values-per-hour.pdf")
+  fumehood_percent_open_means = summary.mean(axis=0)
+  fumehood_percent_open_means.sort()
+  fumehood_percent_open_means.to_csv("output/general-stats/datastream-flow-values-per-fumehood-ordered-mean.csv")
+
+  output_f = open("output/general-stats/datastream-flow-values-per-fumehood-ordered-self-lag-correlation.csv", "w")
+  for i, col in summary.iteritems():
+    correlation =  col.corr(col.shift(1))
+    output_f.write(str(i) + "," + str(correlation) + "\n")
 
 """
 GENERAL ALGORITHMS

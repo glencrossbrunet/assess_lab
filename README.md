@@ -1,5 +1,11 @@
 # Fume Hood Lab Assessment Software
 
+
+## Available Produced Statistics and Plots
+
+
+
+
 ### A Note on Data Management in This Repository
 
 Because I have added the output CSVs and PDFs to the Github, a lot of data gets modified every time I run the code and thus pushed to the Github.
