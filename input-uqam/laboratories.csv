@@ -1,0 +1,16 @@
+laboratory_name,ceil_height,surface_area,additional_evac,additional_equipment_max,additional_equipment_min,num_hoods_a,hood_model_a,num_hoods_b,hood_model_b,day_occupancy_rate,night_occupancy_rate,weekend_day_occupancy_rate,weekend_night_occupancy_rate,avg_sash_height,fumehood_occupancy_rate,notes,ach_occupied_day,ach_unoccupied_day,ach_occupied_night,ach_unoccupied_night,ach_day_start,ach_night_start,cost_cfm,day_occupancy_start,night_occupancy_start,weekend_day_occupancy_start,weekend_night_occupancy_start
+PK-2260,8.4,703,272,0,0,1,VAV-48-770-175,0,NA,0.95,0.05,0.9,0.025,0.25,0.7,,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00
+PK-2270,8.4,456,242,0,0,1,VAV-48-770-175,0,NA,,,,,,,,6,6,6,6,08:00,20:00,,,,,
+PK-2375,8.4,659,147,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-2660,8.4,377,225,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-2759,8.3,94,133,530,50,1,VAV-48-770-175,4,NA,,,,,,,,,,,,,,,,,,
+PK-2785,8.4,493,172,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-3270,8.4,437,,,,2,,0,NA,,,,,,,not in Evac,,,,,,,,,,,
+PK-5270,8.4,217,,,,1,,1,,,,,,,,not in Evac,,,,,,,,,,,
+PK-5365,8.5,622,89,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-5370,8.4,223,82,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-5465,8.3,217,82,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,
+PK-5670,8.4,882,,,,2,,,,,,,,,,not in Evac,,,,,,,,,,,
+PK-5780,8.4,441,84,0,0,1,VAV-48-770-175,0,NA,,,,,,,"not in column ""A"" in Calcu, in D",,,,,,,,,,,
+PK-5791,NA,NA,287,30,3,1,VAV-48-770-175,1,VAV-120-770-175,,,,,,,heigh + sq. feet not in Fiches,,,,,,,,,,,
+PK-5875,8.4,436,84,0,0,1,VAV-48-770-175,0,NA,,,,,,,,,,,,,,,,,,

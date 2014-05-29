@@ -1,5 +1,0 @@
-description,day_occupied_ach,day_unoccupied_ach,night_occupied_ach,night_unoccupied_ach,fumehood_reduction_multiplier,face_velocity_multiplier
-current operation,10,4,10,4,1,1
-reduced overall ach,7,4,6,3,1,1
-current operation sash reduced .2,10,4,10,4,0.8,1
-reduced overall ach sash reduced .2,7,4,6,3,0.8,1

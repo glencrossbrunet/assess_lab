@@ -13,7 +13,7 @@ import numpy as np
 Main control flow is presented here.
 """
 base_path = ""
-data_dir = base_path + "input/"
+data_dir = base_path + "input-uqam/"
 datastream_name = "datastream_raw_medium.txt"
 lab_result_f = None
 postfix = "-full"
@@ -145,15 +145,15 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
 def main(argv=None):
   if argv is None:
     argv = sys.argv
-  general_stats_dir = "output/general-stats/"
+  general_stats_dir = "output-uqam/general-stats/"
   (laboratories, models, hoods) = load_simulator_objects(data_dir, general_stats_dir)
   hood_datastream = load_hood_datastream(data_dir + datastream_name, hoods, general_stats_dir)
   process_hood_datastream(hood_datastream, hoods, general_stats_dir)
   for laboratory in laboratories: 
     lab_result = []
-    output_dir = base_path + "output/" + laboratory.laboratory_name + "/output" + postfix + "/"
-    stats_dir = base_path + "output/" + laboratory.laboratory_name + "/statistics" + postfix + "/"
-    results_dir = base_path + "output/" + laboratory.laboratory_name + "/results" + postfix + "/"
+    output_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/output" + postfix + "/"
+    stats_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/statistics" + postfix + "/"
+    results_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/results" + postfix + "/"
     for directory in [output_dir, stats_dir, results_dir]:
       if not os.path.exists(directory):
         os.makedirs(directory)

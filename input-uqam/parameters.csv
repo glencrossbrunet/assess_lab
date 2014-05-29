@@ -1,0 +1,9 @@
+description	ach_occupied_day	ach_unoccupied_day	ach_occupied_night	ach_unoccupied_night	sash_height_multiplier	unoccupied_face_velocity_multiplier																			
+current operation	NA	NA	NA	NA	1	1																			
+reduced unoccupied ach	NA	4	NA	4	1	1																			
+reduced unoccupied face velocity	NA	NA	NA	NA	1	0.6																			
+sash reduced 20%	NA	NA	NA	NA	0.8	1																			
+sash reduced 50%	NA	NA	NA	NA	0.5	1																			
+"reduced ach, sash reduced 20%"	NA	4	NA	4	0.8	1																			
+"reduced ach, sash reduced 50%"	NA	4	NA	4	0.5	1																			
+"all reduced (ach, face vel, sash 50%)"	NA	4	NA	4	0.5	1																			
