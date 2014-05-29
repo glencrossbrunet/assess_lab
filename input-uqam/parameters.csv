@@ -1,9 +1,9 @@
 description,day_occupied_ach,day_unoccupied_ach,night_occupied_ach,night_unoccupied_ach,sash_height_multiplier,unoccupied_face_velocity_multiplier
-current operation,NA,NA,NA,NA,1,1
-reduced unoccupied ach,NA,4,NA,4,1,1
-reduced unoccupied face velocity,NA,NA,NA,NA,1,0.6
-sash reduced 20%,NA,NA,NA,NA,0.8,1
-sash reduced 50%,NA,NA,NA,NA,0.5,1
-"reduced ach, sash reduced 20%",NA,4,NA,4,0.8,1
-"reduced ach, sash reduced 50%",NA,4,NA,4,0.5,1
-"all reduced (ach, face vel, sash 50%)",NA,4,NA,4,0.5,1
+current operation,6,6,6,6,1,1
+reduced unoccupied ach,6,4,6,4,1,1
+reduced unoccupied face velocity,6,6,6,6,1,0.6
+sash reduced 20%,6,6,6,6,0.8,1
+sash reduced 50%,6,6,6,6,0.5,1
+"reduced ach, sash reduced 20%",6,4,6,4,0.8,1
+"reduced ach, sash reduced 50%",6,4,6,4,0.5,1
+"all reduced (ach, face vel, sash 50%)",6,4,6,4,0.5,1

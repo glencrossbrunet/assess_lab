@@ -26,8 +26,8 @@ use_incomplete_times = True
 parameters = pd.read_csv(data_dir + "parameters.csv", header=0, index_col=0)
 
 
-def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir):
-  laboratory.reset_and_calculate_mins(parameter["day_unoccupied_ach"], parameter["day_occupied_ach"], parameter["night_unoccupied_ach"], parameter["night_occupied_ach"], parameter["sash_height_multiplier"])
+def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir, simulation_name):
+  laboratory.reset_and_calculate_mins(parameter)
   
   print laboratory.laboratory_name
 
@@ -72,7 +72,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
     try:
       hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
     except:
-      hood.dataframe["occupancy"] = calculate_occupancy_series(hood.dataframe["percent_open"].index, laboratory.day_start, laboratory.night_start, laboratory.fumehood_occupancy_rate, 0.1)
+      hood.dataframe["occupancy"] = calculate_occupancy_series(hood.dataframe["percent_open"].index, laboratory.ach_day_start, laboratory.ach_night_start, laboratory.fumehood_occupancy_rate, 0.1)
       hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
     
     hood.dataframe["datastream_and_calculated_cfm_std"] = hood.dataframe[["datastream_flow","evacuation_cfm"]].std(axis=1)
@@ -94,7 +94,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   
   laboratory.dataframe["per_hour_hood_data_count"] = per_hour_count
 
-  laboratory.dataframe["occupancy"] = aggregate_hood_occupancy_to_lab(laboratory.fumehoods)
+  laboratory.dataframe["occupancy"] = calculate_occupancy_series(per_hour_count.index, laboratory.ach_day_start, laboratory.ach_night_start, laboratory.day_occupancy_rate, laboratory.night_occupancy_rate)
   
   laboratory.dataframe["min_lab_cfm"] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe["occupancy"])
   
@@ -102,7 +102,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   
   laboratory.dataframe["min_additional_hood_cfm"] = (laboratory.dataframe["min_hood_cfm"] - laboratory.dataframe["min_lab_cfm"]).apply(lambda x : x if x > 0 else 0)
   
-  laboratory.dataframe["min_possible_lab_cfm"] = laboratory.dataframe[["min_lab_cfm","min_hood_cfm"]].max(axis=1).apply(lambda x : x - 600)
+  laboratory.dataframe["min_possible_lab_cfm"] = laboratory.dataframe[["min_lab_cfm","min_hood_cfm"]].max(axis=1).apply(lambda x : x - laboratory.additional_equipment_max)
   
   laboratory.dataframe["calc_hood_cfm"] = np.sum([hood.dataframe["evacuation_cfm"] for hood in laboratory.fumehoods],axis=0)
   
@@ -138,7 +138,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   plt.close("all")
 
   result = laboratory.dataframe.mean(axis=0)
-  result["description"] = parameter.name
+  result["description"] = simulation_name
   return result
 
 
@@ -149,11 +149,13 @@ def main(argv=None):
   (laboratories, models, hoods) = load_simulator_objects(data_dir, general_stats_dir)
   hood_datastream = load_hood_datastream(data_dir + datastream_name, hoods, general_stats_dir)
   process_hood_datastream(hood_datastream, hoods, general_stats_dir)
+  print laboratories
   for laboratory in laboratories: 
     lab_result = []
-    output_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/output" + postfix + "/"
-    stats_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/statistics" + postfix + "/"
-    results_dir = base_path + "output-uqam/" + laboratory.laboratory_name + "/results" + postfix + "/"
+    top_out = "output-uqam/"
+    output_dir = base_path + top_out + laboratory.laboratory_name + "/output" + postfix + "/"
+    stats_dir = base_path + top_out + laboratory.laboratory_name + "/statistics" + postfix + "/"
+    results_dir = base_path + top_out + laboratory.laboratory_name + "/results" + postfix + "/"
     for directory in [output_dir, stats_dir, results_dir]:
       if not os.path.exists(directory):
         os.makedirs(directory)
@@ -161,7 +163,7 @@ def main(argv=None):
       parameter = parameters.loc[index]
       print "Working on laboratory " + str(laboratory)
       print "Parameters : " + str(parameter)
-      result = generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, stats_dir, results_dir)
+      result = generate_result_for_lab_and_parameter(laboratory, parameter.to_dict(), output_dir, stats_dir, results_dir, parameter.name)
       lab_result.append(result)
     
     current_operation_cfm = lab_result[0]["calc_total_lab_cfm"]
@@ -185,6 +187,5 @@ def main(argv=None):
     lab_result_summary["savings cad"] = lab_result_summary["savings cfm"].apply(lambda x : x * laboratory.cost_cfm)
     lab_result_summary = lab_result_summary.drop("savings cfm", axis=1)
     lab_result_summary.to_csv(results_dir + laboratory.laboratory_name + "--results-for-excel.csv")
-    sys.exit()
 
 main()

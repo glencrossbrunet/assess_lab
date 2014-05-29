@@ -13,7 +13,7 @@ def calculate_min_laboratory_evac_cfm(height, surface_area, ach, additional_evac
 
 
 def get_min_laboratory_evac_cfm_at_time(laboratory, time, occupied):
-  if time.hour >= laboratory.day_start.hour and time.hour <= laboratory.night_start.hour:
+  if time.hour >= laboratory.ach_day_start.hour and time.hour <= laboratory.ach_night_start.hour:
     if occupied:
       return laboratory.min_evac_occupied_day
     else:

@@ -1,0 +1,9 @@
+,per_hour_hood_data_count,occupancy,min_lab_cfm,min_hood_cfm,min_additional_hood_cfm,min_possible_lab_cfm,calc_hood_cfm,stream_hood_cfm,stream_and_calc_hood_cfm_std,stream_and_calc_hood_cfm_mean,calc_total_lab_cfm,stream_total_lab_cfm,calc_excess_cfm,stream_excess_cfm
+count,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+mean,,,,,,,,,,,,,,
+std,,,,,,,,,,,,,,
+min,,,,,,,,,,,,,,
+25%,,,,,,,,,,,,,,
+50%,,,,,,,,,,,,,,
+75%,,,,,,,,,,,,,,
+max,,,,,,,,,,,,,,
