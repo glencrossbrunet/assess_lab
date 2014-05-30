@@ -1,0 +1,7 @@
+laboratory_name,avg_sash_height,ceil_height,surface_area,additional_evac,additional_equipment_max,additional_equipment_min,num_hoods_a,hood_model_a,num_hoods_b,hood_model_b,day_occupancy_rate,night_occupancy_rate,weekend_day_occupancy_rate,weekend_night_occupancy_rate,fumehood_occupancy_rate,day_occupied_ach,day_unoccupied_ach,night_occupied_ach,night_unoccupied_ach,ach_day_start,ach_night_start,cost_cfm,day_occupancy_start,night_occupancy_start,weekend_day_occupancy_start,weekend_night_occupancy_start,notes
+PK-7380,0.25,8.3,218,83,30,30,1,VAV-48-770-175,0,NA,0.75,0.5,0.25,0.25,0.95,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,
+PK-7390,0.125,8.3,330,159,0,0,2,VAV-48-770-175,0,NA,0.95,0.5,0.25,0.25,0.95,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,
+PK-7670,0.125,8.3,226,356,0,0,4,VAV-48-770-175,0,NA,0.95,0.525,0.1,0.1,0.95,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,"Lab modified since concept original, made assumptions"
+PK-7680,0.25,8.4,208,80,30,30,1,VAV-48-770-175,0,NA,0.896195652,0.373913044,0.303804348,0.227445652,0.70615942,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,"Not in concept originl or Dec 2010 data, made assumptions"
+PK-7690,1,8.5,205,80,30,30,1,VAV-60-960-220,0,NA,0.896195652,0.373913044,0.303804348,0.227445652,0.70615942,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,"Not in concept originl or Dec 2010 data, made assumptions"
+PK-7875-7465,0.5,8.3,1100,1400,600,30,4,VAV-48-770-175,4,VAV-120-1994-460,0.95,0.175,0.25,0.1,0.25,6,6,6,6,08:00,20:00,5,08:00,20:00,10:00,18:00,"Lab modified since concept original, made assumptions"

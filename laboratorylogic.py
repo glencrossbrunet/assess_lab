@@ -107,10 +107,10 @@ def calculate_min_lab_evacuation_series(laboratory, occupancy):
   return pd.Series(result, index=occupancy.index)
 
 
-def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, sash_height_multiplier):
+def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, sash_height_multiplier, unoccupied_face_velocity_multiplier):
   df = pd.DataFrame(index=occupancy.index)
   for hood in fumehoods:
-    df[hood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy, sash_height_multiplier)
+    df[hood] = calculate_hood_evacuation_series(hood, pd.Series([0 for time in occupancy.index], index=occupancy.index), occupancy, sash_height_multiplier, unoccupied_face_velocity_multiplier)
   return df.sum(axis=1)
 
 

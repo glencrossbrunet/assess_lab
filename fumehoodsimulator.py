@@ -40,25 +40,25 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   per_hour_count = summary.count(axis=1).transpose()
   per_hour_average = summary.mean(axis=1)
 
-  fig, ax = plt.subplots()
-  ax = per_hour_count.plot(kind="line", title=("Hood Data Frequency Over Time for " + laboratory.laboratory_name))
-  fig.tight_layout()
-  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour.pdf")
-
-  fig, ax = plt.subplots()
-  fig = bootstrap_plot(per_hour_count, size=50, samples=100)
-  fig.suptitle("Hood Data Frequency Bootstrap Summary for " + laboratory.laboratory_name)
-  fig.tight_layout()
-  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour-bootstrap_plot.pdf")
-  
-  fig, ax = plt.subplots()
-  ax = autocorrelation_plot(per_hour_count)
-  fig.suptitle("Hood Data Frequency Autocorrelation Summary for " + laboratory.laboratory_name)
-  fig.tight_layout()
-  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour-autocorrelation_plot.pdf")
-
-  per_hour_count.to_csv(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour.csv")
-  per_hour_count.describe().to_csv(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour--describe.csv")
+#  fig, ax = plt.subplots()
+#  ax = per_hour_count.plot(kind="line", title=("Hood Data Frequency Over Time for " + laboratory.laboratory_name))
+#  fig.tight_layout()
+#  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour.pdf")
+#
+#  fig, ax = plt.subplots()
+#  fig = bootstrap_plot(per_hour_count, size=50, samples=100)
+#  fig.suptitle("Hood Data Frequency Bootstrap Summary for " + laboratory.laboratory_name)
+#  fig.tight_layout()
+#  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour-bootstrap_plot.pdf")
+#  
+#  fig, ax = plt.subplots()
+#  ax = autocorrelation_plot(per_hour_count)
+#  fig.suptitle("Hood Data Frequency Autocorrelation Summary for " + laboratory.laboratory_name)
+#  fig.tight_layout()
+#  plt.savefig(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour-autocorrelation_plot.pdf")
+#
+#  per_hour_count.to_csv(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour.csv")
+#  per_hour_count.describe().to_csv(stats_dir + laboratory.laboratory_name + "--open-values-count-per-hour--describe.csv")
 
 ## PROBLEM: LOSE ABILITY TO COMPARE TO FLOW
 #  for hood in laboratory.fumehoods:
@@ -100,7 +100,7 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   
   laboratory.dataframe["min_lab_cfm"] = calculate_min_lab_evacuation_series(laboratory, laboratory.dataframe["occupancy"])
   
-  laboratory.dataframe["min_hood_cfm"] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe["occupancy"], laboratory.sash_height_multiplier)
+  laboratory.dataframe["min_hood_cfm"] = calculate_min_summed_hood_evacuation_series(laboratory.fumehoods, laboratory.dataframe["occupancy"], laboratory.sash_height_multiplier, laboratory.unoccupied_face_velocity_multiplier)
   
   laboratory.dataframe["min_additional_hood_cfm"] = (laboratory.dataframe["min_hood_cfm"] - laboratory.dataframe["min_lab_cfm"]).apply(lambda x : x if x > 0 else 0)
   
@@ -123,21 +123,21 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
   laboratory.dataframe["stream_excess_cfm"] = (laboratory.dataframe["stream_total_lab_cfm"] - laboratory.dataframe["min_possible_lab_cfm"]).apply(lambda x : x if x > 0 else 0)
 
 
-  laboratory.dataframe.to_csv(output_dir + str(laboratory) + "--dataframe.csv")
-  laboratory.dataframe.describe().to_csv(stats_dir + str(laboratory) + "--dataframe-description.csv")
+#  laboratory.dataframe.to_csv(output_dir + str(laboratory) + "--dataframe.csv")
+#  laboratory.dataframe.describe().to_csv(stats_dir + str(laboratory) + "--dataframe-description.csv")
 
   laboratory.dataframe.dropna(axis=0, how="any", inplace=True)
-  laboratory.dataframe.to_csv(output_dir + str(laboratory) + "--dataframe-filtered.csv")
-  laboratory.dataframe.describe().to_csv(stats_dir + str(laboratory) + "--dataframe-filtered-description.csv")
-  
-  laboratory.dataframe[["calc_hood_cfm","stream_hood_cfm"]].plot()
-  plt.savefig(output_dir + str(laboratory) + "-stream-vs-calc.pdf")
-
-  laboratory.dataframe[["min_lab_cfm", "min_additional_hood_cfm", "calc_excess_cfm","calc_total_lab_cfm"]].plot()
-  plt.savefig(stats_dir + str(laboratory) + "-calc-base-hood-sash-cfm.pdf")
-  laboratory.dataframe[["min_lab_cfm", "min_additional_hood_cfm", "stream_excess_cfm","stream_total_lab_cfm"]].plot()
-  plt.savefig(stats_dir + str(laboratory) + "-stream-base-hood-sash-cfm.pdf")
-  plt.close("all")
+#  laboratory.dataframe.to_csv(output_dir + str(laboratory) + "--dataframe-filtered.csv")
+#  laboratory.dataframe.describe().to_csv(stats_dir + str(laboratory) + "--dataframe-filtered-description.csv")
+#  
+#  laboratory.dataframe[["calc_hood_cfm","stream_hood_cfm"]].plot()
+#  plt.savefig(output_dir + str(laboratory) + "-stream-vs-calc.pdf")
+#
+#  laboratory.dataframe[["min_lab_cfm", "min_additional_hood_cfm", "calc_excess_cfm","calc_total_lab_cfm"]].plot()
+#  plt.savefig(stats_dir + str(laboratory) + "-calc-base-hood-sash-cfm.pdf")
+#  laboratory.dataframe[["min_lab_cfm", "min_additional_hood_cfm", "stream_excess_cfm","stream_total_lab_cfm"]].plot()
+#  plt.savefig(stats_dir + str(laboratory) + "-stream-base-hood-sash-cfm.pdf")
+#  plt.close("all")
 
   result = laboratory.dataframe.mean(axis=0)
   result["description"] = simulation_name
@@ -183,14 +183,12 @@ def main(argv=None):
     lab_result_summary.set_index("description")
     lab_result_summary["savings cfm"] = lab_result_summary["lab total cfm"].apply(lambda x : 0 if current_operation_cfm - x < 0 else current_operation_cfm - x)
     fig, ax = plt.subplots()
-    ax = lab_result_summary[["base lab cfm","hood inc cfm","sash driven cfm", "savings cfm"]].plot(stacked=True, legend=True, kind="barh",title=("Laboratory Summary for " + laboratory.laboratory_name),rot=45,)
+    ax = lab_result_summary[["base lab cfm","hood inc cfm","sash driven cfm", "savings cfm"]].plot(stacked=True, legend=True, kind="barh",title=("Laboratory Summary for " + laboratory.laboratory_name),rot=45,color=['c', 'm', 'r', 'g'])
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=4)
     plt.savefig(results_dir + laboratory.laboratory_name + "--barh.png")
     plt.savefig(results_dir + laboratory.laboratory_name + "--barh.pdf")
     lab_result_summary["savings cad"] = lab_result_summary["savings cfm"].apply(lambda x : x * laboratory.cost_cfm)
     lab_result_summary = lab_result_summary.drop("savings cfm", axis=1)
     lab_result_summary.to_csv(results_dir + laboratory.laboratory_name + "--results-for-excel.csv")
-
-    sys.exit()
 
 main()

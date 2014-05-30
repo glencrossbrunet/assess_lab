@@ -1,0 +1,46 @@
+ Volume in drive E has no label.
+ Volume Serial Number is C015-234B
+
+ Directory of E:\git\glencrossbrunet\assess_lab\uqam results\raw\output
+
+30/05/2014  15:47    <DIR>          .
+30/05/2014  15:47    <DIR>          ..
+30/05/2014  15:47                 0 dir.txt
+30/05/2014  15:21             1,013 PK-2260--results.csv
+30/05/2014  15:21             1,172 PK-2270--results.csv
+30/05/2014  15:21             1,168 PK-2375--results.csv
+30/05/2014  15:22             1,173 PK-2660--results.csv
+30/05/2014  15:22             1,249 PK-2759--results.csv
+30/05/2014  15:22             1,173 PK-2785--results.csv
+30/05/2014  15:22             1,209 PK-3270--results.csv
+30/05/2014  15:22             1,308 PK-5270--results.csv
+30/05/2014  15:22             1,046 PK-5365--results.csv
+30/05/2014  15:22             1,220 PK-5370--results.csv
+30/05/2014  15:22             1,212 PK-5465--results.csv
+30/05/2014  15:22             1,141 PK-5670--results.csv
+30/05/2014  15:22             1,181 PK-5780--results.csv
+30/05/2014  15:22             1,202 PK-5791--results.csv
+30/05/2014  15:22             1,003 PK-5875--results.csv
+30/05/2014  15:22             1,177 PK-6280--results.csv
+30/05/2014  15:22             1,306 PK-6355--results.csv
+30/05/2014  15:22             1,165 PK-6360--results.csv
+30/05/2014  15:22             1,215 PK-6365--results.csv
+30/05/2014  15:22             1,210 PK-6375--results.csv
+30/05/2014  15:22             1,157 PK-6465--results.csv
+30/05/2014  15:22             1,222 PK-6660--results.csv
+30/05/2014  15:22             1,271 PK-6670--results.csv
+30/05/2014  15:22             1,337 PK-6767--results.csv
+30/05/2014  15:22             1,137 PK-6781--results.csv
+30/05/2014  15:22             1,182 PK-6865--results.csv
+30/05/2014  15:22             1,219 PK-7270--results.csv
+30/05/2014  15:22             1,213 PK-7360--results.csv
+30/05/2014  15:23             1,260 PK-7365--results.csv
+30/05/2014  15:23             1,259 PK-7375--results.csv
+30/05/2014  15:23             1,229 PK-7380--results.csv
+30/05/2014  15:23             1,273 PK-7390--results.csv
+30/05/2014  15:23             1,311 PK-7670--results.csv
+30/05/2014  15:23             1,214 PK-7680--results.csv
+30/05/2014  15:23             1,241 PK-7690--results.csv
+30/05/2014  15:23             1,204 PK-7875-7465--results.csv
+              37 File(s)         43,272 bytes
+               2 Dir(s)  266,666,856,448 bytes free

@@ -26,7 +26,7 @@ def load_fumehoods(file, laboratories, hoodmodels):
 
 def load_simulator_objects(data_directory, debug_directory):
 
-  laboratories = load_laboratories(data_directory + 'laboratories.csv')
+  laboratories = load_laboratories(data_directory + 'laboratories-c.csv')
   hoodmodels = load_hoodmodels(data_directory + 'hoodmodels.csv')
   fumehoods = load_fumehoods(data_directory + 'fumehoods.csv', laboratories, hoodmodels)
   
