@@ -70,10 +70,12 @@ def generate_result_for_lab_and_parameter(laboratory, parameter, output_dir, sta
     print "Processing Hood " + str(hood)
     
     try:
-      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
+      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier, laboratory.unoccupied_face_velocity_multiplier
+)
     except:
       hood.dataframe["occupancy"] = calculate_occupancy_series(hood.dataframe["percent_open"].index, laboratory.ach_day_start, laboratory.ach_night_start, laboratory.fumehood_occupancy_rate, 0.1)
-      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier)
+      hood.dataframe["evacuation_cfm"] = calculate_hood_evacuation_series(hood, hood.dataframe["percent_open"], hood.dataframe["occupancy"], laboratory.sash_height_multiplier, laboratory.unoccupied_face_velocity_multiplier
+)
     
     hood.dataframe["datastream_and_calculated_cfm_std"] = hood.dataframe[["datastream_flow","evacuation_cfm"]].std(axis=1)
     hood.dataframe["datastream_and_calculated_cfm_mean"] = hood.dataframe[["datastream_flow","evacuation_cfm"]].mean(axis=1)
@@ -167,6 +169,7 @@ def main(argv=None):
       lab_result.append(result)
     
     current_operation_cfm = lab_result[0]["calc_total_lab_cfm"]
+    print current_operation_cfm
     print "Current operating cfm for laboratory :: " + str(current_operation_cfm)
     lab_result = pd.DataFrame(lab_result)
     lab_result.to_csv(results_dir + laboratory.laboratory_name + "--results.csv")
@@ -187,5 +190,7 @@ def main(argv=None):
     lab_result_summary["savings cad"] = lab_result_summary["savings cfm"].apply(lambda x : x * laboratory.cost_cfm)
     lab_result_summary = lab_result_summary.drop("savings cfm", axis=1)
     lab_result_summary.to_csv(results_dir + laboratory.laboratory_name + "--results-for-excel.csv")
+
+    sys.exit()
 
 main()

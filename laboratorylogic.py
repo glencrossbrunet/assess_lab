@@ -118,9 +118,10 @@ def calculate_min_summed_hood_evacuation_series(fumehoods, occupancy, sash_heigh
 HOOD LEVEL ALGORITHMS
 """
 
-def calculate_hood_evacuation_series(hood, percent_open, occupancy, sash_height_multiplier):
+def calculate_hood_evacuation_series(hood, percent_open, occupancy, sash_height_multiplier, unoccupied_face_velocity_multiplier
+):
   result = []
   for time in percent_open.index:
-    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time], sash_height_multiplier)
+    cfm = calculate_bounded_hood_cfm(hood, percent_open.loc[time], occupancy.loc[time], sash_height_multiplier, unoccupied_face_velocity_multiplier)
     result.append(cfm)
   return pd.Series(result, index = percent_open.index)

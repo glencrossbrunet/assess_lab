@@ -39,15 +39,15 @@ def copy_laboratory(laboratory):
 HOOD LEVEL
 '''
 
-def get_hood_face_velocity(hood, occupied):
-  return hood.model.face_vel_occupied if occupied else hood.model.face_vel_unoccupied
+def get_hood_face_velocity(hood, occupied, unoccupied_face_velocity_multiplier):
+  return hood.model.face_vel_occupied if occupied else hood.model.face_vel_unoccupied * unoccupied_face_velocity_multiplier
 
 
-def calculate_face_intake_cfm(hood, sash, occupied):
-  return get_hood_face_velocity(hood, occupied) * sash * hood.model.sash_width / 144
+def calculate_face_intake_cfm(hood, sash, occupied, unoccupied_face_velocity_multiplier):
+  return get_hood_face_velocity(hood, occupied, unoccupied_face_velocity_multiplier) * sash * hood.model.sash_width / 144
 
 
-def calculate_bounded_hood_cfm(hood, sash_percent, occupied, sash_height_multiplier):
+def calculate_bounded_hood_cfm(hood, sash_percent, occupied, sash_height_multiplier, unoccupied_face_velocity_multiplier):
   sash = sash_percent * hood.model.max_sash_height * 0.01
-  return np.min([hood.model.max_cfm, np.max([hood.model.min_cfm, sash_height_multiplier * np.random.randint(95,105) * 0.01 * calculate_face_intake_cfm(hood, sash, occupied)])])
+  return np.min([hood.model.max_cfm, np.max([hood.model.min_cfm, sash_height_multiplier * np.random.randint(95,105) * 0.01 * calculate_face_intake_cfm(hood, sash, occupied, unoccupied_face_velocity_multiplier)])])
 
